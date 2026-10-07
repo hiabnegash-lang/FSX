@@ -1,0 +1,43 @@
+code,category,name,description,price_small,price_medium,price_large,price,is_spicy,served_with_rice,min_lead_minutes,notes
+A1,Appetizers,Chips (bag),,,,,1.50,false,,,
+A2,Appetizers,Egg Roll,,,,,1.50,false,,,
+A3,Appetizers,Fried Chicken Wings,6 pieces,,,,10.50,false,,,
+S1,Soup,Hot and Sour Soup,,,,,3.99,true,,,
+S2,Soup,Egg Drop Soup,,,,,3.99,false,,,
+S3,Soup,Chicken Soup,,,,,7.00,false,,,
+G1,Gen Joe's Specials,Combination Plate,Half order of any two from G2-G10,,,,12.99,false,,,COMBO: customer picks 2 half orders from G2-G10
+G2,Gen Joe's Specials,Gen Joe's Chicken,,,,,12.99,true,,,
+G3,Gen Joe's Specials,Moo Goo Gai Pan,,,,,12.99,false,,,
+G4,Gen Joe's Specials,Sweet and Sour Chicken,,,,,12.99,false,,,
+G5,Gen Joe's Specials,Broccoli Chicken,,,,,12.99,false,,,
+G6,Gen Joe's Specials,Broccoli Beef,,,,,13.50,false,,,
+G9,Gen Joe's Specials,Vegetable Delight,,,,,12.50,false,,,
+G10,Gen Joe's Specials,Spicy Mixed Vegetable,,,,,12.50,true,,,
+C1,Chef's Specials,Pepper Chicken,,,,,12.99,true,true,,
+C2,Chef's Specials,Szechuan Chicken,,,,,12.99,true,true,,
+C3,Chef's Specials,Hot and Sour Chicken,,,,,12.99,true,true,,
+C4,Chef's Specials,Spicy Broccoli Chicken w/ Brown Sauce,,,,,12.99,true,true,,
+C5,Chef's Specials,Vegetable Noodle,,,,,12.99,false,false,,no rice
+C6,Chef's Specials,Mandarin Chicken,,,,,12.99,true,true,,
+C7,Chef's Specials,Kung Pao Chicken,,,,,12.99,true,true,,
+C8,Chef's Specials,Chicken with Cashew Nuts,,,,,12.99,false,true,,
+C9,Chef's Specials,Pepper Steak,,,,,12.99,false,true,,
+C10,Chef's Specials,Szechuan Beef,,,,,12.99,true,true,,
+C11,Chef's Specials,Chicken Lo Mein,,,,,12.99,false,false,,no rice
+C12,Chef's Specials,Beef Lo Mein,,,,,12.99,false,false,,no rice
+C13,Chef's Specials,Chicken & Shrimp with Vegetable,,,,,13.50,false,true,,
+C14,Chef's Specials,Chicken & Shrimp Sauteed,,,,,13.50,false,true,,
+C15,Chef's Specials,Triple Delight,"Chicken, shrimp, beef",,,,13.50,false,true,,
+C16,Chef's Specials,Tri Kung Pao,"Chicken, shrimp & beef w/ peanut",,,,13.50,true,true,,peanut allergen
+C17,Chef's Specials,Special Lo Mein,"Chicken, shrimp & beef",,,,13.50,false,false,,no rice
+C18,Chef's Specials,Shrimp with Vegetable,,,,,13.50,false,true,,
+R1,Fried Rice,Chef's Fried Rice,,7.50,,11.90,,false,,,
+R2,Fried Rice,Shrimp Fried Rice,,7.50,,11.90,,false,,,
+R3,Fried Rice,Chicken Fried Rice,,7.50,,11.90,,false,,,
+R4,Fried Rice,Steamed Rice,,4.00,,6.00,,false,,,
+R5,Fried Rice,Beef Fried Rice,,8.00,,12.99,,false,,,
+R6,Fried Rice,Vegetable Fried Rice,,7.00,,11.80,,false,,,
+B1,Beverages,Soft Drink or Iced Tea,,,,,1.50,false,,,customer picks any drink from the fridge at pickup
+T1,Catering Trays,Chicken Tray,Small / Medium / Large tray. Order ahead recommended,39.99,59.99,79.99,,false,,40,same prices for all 3 fillings - confirm
+T2,Catering Trays,Shrimp Tray,Small / Medium / Large tray. Order ahead recommended,39.99,59.99,79.99,,false,,40,same prices for all 3 fillings - confirm
+T3,Catering Trays,Chef's Fried Rice Tray,Small / Medium / Large tray. Order ahead recommended,39.99,59.99,79.99,,false,,40,same prices for all 3 fillings - confirm
