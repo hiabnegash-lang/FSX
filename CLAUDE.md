@@ -36,8 +36,12 @@ Supabase project ref: `csvuhyeplcxvzlvkduwj` · Repo: https://github.com/AgentPi
 - Row Level Security ON for every table.
 - **Prices are always recalculated server-side** from the database. Never trust a price from the browser.
 - Money is stored as **integer cents**. Never floats.
-- Branch convention: `feature/<name>-<desc>` → PR into `dev` → `dev` merges to `main` for releases.
-- Every PR description lists the RTM requirement IDs it covers (F1–F30).
+- **Git workflow (full detail in `CONTRIBUTING.md`):** branch from `dev` as
+  `feature/T<id>-<name>-<desc>` (or `fix/T<id>-…`) → commits start with the task ID
+  (`T29 - Add category nav`) → PR into `dev`, squash-merged after 1 approval and green CI →
+  `dev` merges to `main` only at milestones. Never commit or push to `main` or `dev` directly.
+  Never force-push a shared branch. No long-lived personal branches.
+- Every PR description lists the task ID and the RTM requirement IDs it covers (F1–F30).
 
 ## Business rules from the sponsor
 - **Pickup only.** No delivery. Mon–Sat 11:00–21:00 Central; closed Sunday. Ordering is disabled
