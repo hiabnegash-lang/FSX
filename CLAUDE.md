@@ -25,7 +25,7 @@ dense, high-contrast operational UI. Same codebase, two visual treatments.
 - **Email** — order-ready notification (Resend or similar). New external dependency, logged as a change.
 - **Hosting** — Vercel + Supabase (charter revised 3 Oct; AWS Learner Lab is no longer the target)
 
-Supabase project ref: `csvuhyeplcxvzlvkduwj` · Repo: https://github.com/AgentPierre/FSX
+Supabase project ref: `csvuhyeplcxvzlvkduwj` · Repo: https://github.com/hiabnegash-lang/FSX
 
 ## Rules for Claude Code in this repo
 - **Never commit secrets.** `.env.local` is gitignored. `.env.example` holds key *names* only.
@@ -52,6 +52,8 @@ Supabase project ref: `csvuhyeplcxvzlvkduwj` · Repo: https://github.com/AgentPi
 - **Sizes:** fried rice sm/lg; catering trays S/M/L at $39.99 / $59.99 / $79.99. Price lives on the
   size row, not the item. Unsized items get a single "regular" size row.
 - **Combination Plate (G1, $12.99):** the customer picks **two half orders from G2–G10**.
+  The restaurant has **no G7 or G8**; codes match the printed menu exactly, gaps included. This is
+  intentional — don't flag it or renumber.
 - **Spicy:** any entrée can be made spicy on request. It's an option on the order line, not a
   separate item. The ★ on the menu is a display flag only.
 - **Drinks:** one $1.50 item; the customer picks from the fridge at pickup.

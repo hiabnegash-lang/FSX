@@ -6,7 +6,7 @@ import type {
   Settings,
   TicketStatus,
 } from "../types";
-import type { DataStore } from "./store";
+import type { DataStore, MarkPaidResult } from "./store";
 
 const size = (id: string, name: string, priceCents: number) => ({
   id,
@@ -142,14 +142,16 @@ class StubStore implements DataStore {
     if (o && o.paymentStatus === "pending_payment")
       o.paymentStatus = "cancelled";
   }
-  async markPaid(orderId: string, sessionId: string) {
-    if (this.paidSessions.has(sessionId)) return false;
+  async markPaid(orderId: string, sessionId: string): Promise<MarkPaidResult> {
+    if (this.paidSessions.has(sessionId)) return "already_paid";
     const o = this.orders.get(orderId);
-    if (!o) return false;
+    if (!o) return "not_found";
+    if (o.stripeSessionId !== sessionId) return "session_mismatch";
+    if (o.paymentStatus !== "pending_payment") return "not_pending";
     this.paidSessions.add(sessionId);
     o.paymentStatus = "paid";
     o.ticketStatus = "received";
-    return true;
+    return "paid";
   }
   async setTicketStatus(orderId: string, status: TicketStatus) {
     const o = this.orders.get(orderId)!;

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { store } from "@/lib/data";
 import { ApiError, errorResponse } from "@/lib/errors";
 import { createPendingOrder } from "@/lib/orders";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, siteTag } from "@/lib/stripe";
 import { createOrderSchema, parseBody } from "@/lib/validation";
 import type { OrderLine } from "@/lib/types";
 
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
           mode: "payment",
           client_reference_id: order.id,
           customer_email: order.customerEmail,
-          metadata: { order_id: order.id },
+          metadata: { order_id: order.id, site: siteTag() },
           line_items: [
             ...order.lines.map((l) => ({
               quantity: l.quantity,

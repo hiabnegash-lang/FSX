@@ -67,11 +67,19 @@ Errors: `400 invalid_request`, `409 store_closed`, `409 item_unavailable`, `422 
 
 Reads the **raw** body, verifies `Stripe-Signature` with `STRIPE_WEBHOOK_SECRET`.
 
-- `checkout.session.completed` → set `payment_status=paid`, `ticket_status=received`, record the payment.
-  Idempotent: the Stripe session id is unique, a repeat delivery is a no-op `200`.
-- If `amount_total` ≠ the order total, do **not** mark paid; log and return `200`.
+- `checkout.session.completed` (with `payment_status=paid`) or `checkout.session.async_payment_succeeded`
+  → set `payment_status=paid`, `ticket_status=received`, record the payment.
+- Only flips an order that is still `pending_payment` **and** whose saved Stripe session id matches the
+  event's session. A cancelled or refunded order is never revived; that case is logged for the owner.
+- Idempotent: a repeat delivery for the same session is a no-op `200`.
+- Sessions carry `metadata.site`; events for sessions created by another environment (teammates share
+  the Stripe test account) are ignored with `200`.
+- Order not found → `500 order_not_found`, so Stripe retries (up to 3 days) instead of the payment being lost.
+- `amount_total` ≠ order total → **not** marked paid; logged, `200` (a retry would not help).
+- `checkout.session.async_payment_failed` → logged; order stays `pending_payment`.
 - Other event types: `200`, ignored. Bad signature: `400 invalid_signature`.
-  This is the only place an order becomes paid.
+
+This is the only place an order becomes paid.
 
 ## PATCH /api/orders/{id}/ticket
 
