@@ -73,6 +73,14 @@ Reads the **raw** body, verifies `Stripe-Signature` with `STRIPE_WEBHOOK_SECRET`
 - Other event types: `200`, ignored. Bad signature: `400 invalid_signature`.
   This is the only place an order becomes paid.
 
+## GET /api/orders/{id}
+
+Public order status for the confirmation page (the order id is an unguessable UUID). Returns
+`id, orderNumber, paymentStatus, ticketStatus, pickupTime, subtotalCents, taxCents, totalCents, lines[]`.
+Never returns email, phone or Stripe ids. `Cache-Control: no-store`. Errors: `404 not_found`.
+The `/order/[id]` page polls this every 3 s while `pending_payment`, every 10 s until the ticket is
+`completed`, and stops on `cancelled`/`refunded`.
+
 ## PATCH /api/orders/{id}/ticket
 
 Body `{ "status": "in_progress" }`. Roles `staff` or `owner` only.
