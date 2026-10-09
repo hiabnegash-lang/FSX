@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { store } from "@/lib/data";
 import { ApiError, errorResponse } from "@/lib/errors";
-import { getStripe, siteTag } from "@/lib/stripe";
+import { getStripe, siteTag, stripeConfigured } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
@@ -16,11 +16,11 @@ const PAID_EVENTS = new Set([
 export async function POST(request: Request) {
   try {
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!secret || !process.env.STRIPE_SECRET_KEY) {
+    if (!secret || !stripeConfigured()) {
       throw new ApiError(
         503,
         "stripe_not_configured",
-        "Webhook is not configured.",
+        "Webhook is not configured (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET and STRIPE_SITE_TAG are required).",
       );
     }
 

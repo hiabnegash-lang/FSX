@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { store } from "@/lib/data";
 import { ApiError, errorResponse } from "@/lib/errors";
 import { createPendingOrder } from "@/lib/orders";
-import { getStripe, siteTag } from "@/lib/stripe";
+import { getStripe, siteTag, stripeConfigured } from "@/lib/stripe";
 import { createOrderSchema, parseBody } from "@/lib/validation";
 import type { OrderLine } from "@/lib/types";
 
@@ -20,11 +20,11 @@ export async function POST(request: Request) {
   try {
     const body = await parseBody(request, createOrderSchema);
 
-    if (!process.env.STRIPE_SECRET_KEY) {
+    if (!stripeConfigured()) {
       throw new ApiError(
         503,
         "stripe_not_configured",
-        "Payments are not configured.",
+        "Payments are not configured (STRIPE_SECRET_KEY and STRIPE_SITE_TAG are required).",
       );
     }
 
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
           mode: "payment",
           client_reference_id: order.id,
           customer_email: order.customerEmail,
-          metadata: { order_id: order.id, site: siteTag() },
+          metadata: { order_id: order.id, site: siteTag() ?? "" },
           line_items: [
             ...order.lines.map((l) => ({
               quantity: l.quantity,

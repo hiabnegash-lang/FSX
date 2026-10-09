@@ -2,7 +2,9 @@
 
 Status: **draft against in-memory stubs.** The schema is not approved until 12 Oct; every route
 reads and writes through the `DataStore` interface in `lib/data/store.ts`, so swapping the stub for
-Supabase changes one file. Covers RTM F9–F18 (ordering, payment, kitchen status) at the API level.
+Supabase changes one file. Covers RTM F3–F6, F8–F13 and F16 at the API level. F14 (confirmation
+number) is only partly covered here: `POST /api/orders` returns the order number, and the confirmation
+page that displays it is T30. F15 (kitchen view within 5 seconds) and F17–F30 are not covered.
 
 Conventions
 

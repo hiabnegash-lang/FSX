@@ -13,13 +13,15 @@ export function getStripe() {
 
 /**
  * Identifies which environment created a Checkout session (stored in session metadata).
- * Everyone shares one Stripe test account, so set STRIPE_SITE_TAG locally (e.g. "local-jose")
- * to keep your webhook from acting on teammates' sessions.
+ * Everyone shares one Stripe test account, so each environment needs its own unique tag
+ * (e.g. "local-jose", "vercel-dev") to keep a webhook from acting on teammates' sessions.
+ * Deliberately has no default: a shared default (like localhost:3000) would defeat the isolation.
  */
-export function siteTag(): string {
-  return (
-    process.env.STRIPE_SITE_TAG ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "http://localhost:3000"
-  );
+export function siteTag(): string | null {
+  return process.env.STRIPE_SITE_TAG?.trim() || null;
+}
+
+/** True when payments can run: the secret key and a site tag are both set. */
+export function stripeConfigured(): boolean {
+  return Boolean(process.env.STRIPE_SECRET_KEY && siteTag());
 }
