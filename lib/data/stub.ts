@@ -40,20 +40,17 @@ const MENU: MenuCategory[] = [
     items: [item("A2", "Egg Roll", [size("sz_a2", "regular", 150)])],
   },
   {
+    // Same as docs/menu.csv: G2–G10 are full-price entrées. G1 picks two of them as halves;
+    // there are no separate "half order" items or $0 sizes.
     id: "c2",
-    name: "Combination Plate",
+    name: "Gen Joe's Specials",
     sortOrder: 2,
-    items: [item("G1", "Combination Plate", [size("sz_g1", "regular", 1299)])],
-  },
-  {
-    id: "c3",
-    name: "Half Orders",
-    sortOrder: 3,
     items: [
-      item("G2", "Sesame Chicken (half)", [size("sz_g2", "regular", 0)], {
+      item("G1", "Combination Plate", [size("sz_g1", "regular", 1299)]),
+      item("G2", "Gen Joe's Chicken", [size("sz_g2", "regular", 1299)], {
         isSpicyFlag: true,
       }),
-      item("G5", "Beef & Broccoli (half)", [size("sz_g5", "regular", 0)]),
+      item("G5", "Broccoli Chicken", [size("sz_g5", "regular", 1299)]),
     ],
   },
   {

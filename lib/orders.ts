@@ -57,6 +57,14 @@ export async function createPendingOrder(
       });
     const { item, size } = hit;
     if (!item.isActive || !item.isAvailable) throw unavailable(item);
+    // Nothing on the menu is free. A $0 size is a data error and must never be sold as a line.
+    if (size.priceCents <= 0)
+      throw new ApiError(
+        400,
+        "invalid_request",
+        `${item.name} can't be ordered on its own.`,
+        { code: item.code },
+      );
 
     const components = l.components ?? [];
     if (item.code === COMBO_CODE) {
