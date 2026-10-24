@@ -6,6 +6,7 @@ import { menuItems, resolveSize, validateSelection } from "@/lib/cart";
 import { formatCents } from "@/lib/money";
 import { useCart } from "../cart-provider";
 import { ItemCustomization } from "../item-customization";
+import { CartTotals } from "../cart-totals";
 import { sizeLabel } from "@/lib/menu-display";
 
 export default function Page() {
@@ -44,7 +45,7 @@ export default function Page() {
                         <div role="group" aria-label={`Quantity for ${name}, line ${index + 1}`} className="flex items-center gap-3">
                           <button type="button" className={button} disabled={line.quantity <= 1 || !!error} aria-label={`Decrease quantity for ${name}, line ${index + 1}`} onClick={() => cart.edit(line.id, { ...line, quantity: line.quantity - 1 })}>−</button>
                           <span className="tabular-nums">{line.quantity}</span>
-                          <button type="button" className={button} disabled={line.quantity >= 50 || !!error} aria-label={`Increase quantity for ${name}, line ${index + 1}`} onClick={() => cart.edit(line.id, { ...line, quantity: line.quantity + 1 })}>+</button>
+                          <button type="button" className={button} disabled={line.quantity >= 50 || !!error || cart.ordersOpen === false} aria-label={`Increase quantity for ${name}, line ${index + 1}`} onClick={() => cart.edit(line.id, { ...line, quantity: line.quantity + 1 })}>+</button>
                         </div>
                         <button id={`cart-edit-${line.id}`} type="button" className={button} disabled={!hit} aria-label={`Edit ${name}, line ${index + 1}`} onClick={() => setEditing(line.id)}>Edit</button>
                         <button type="button" className={destructiveButton} aria-label={`Remove ${name}, line ${index + 1}`} onClick={() => {
@@ -59,8 +60,7 @@ export default function Page() {
               })}
             </ul>
             <div className="mt-6 rounded-xl bg-white p-6">
-              <p className="flex flex-wrap justify-between gap-3 text-xl font-semibold"><span>Subtotal</span><span className="tabular-nums">{cart.subtotalCents === null ? "Price unavailable" : formatCents(cart.subtotalCents)}</span></p>
-              <p className="mt-2 text-sm">Tax is excluded. Prices and availability are verified by the server when placing your order.</p>
+              <CartTotals subtotalCents={cart.subtotalCents} taxRateBps={cart.settings?.taxRateBps ?? null} />
               <button type="button" className={`${destructiveButton} mt-4`} onClick={() => { cart.clear(); setEditing(null); focusAfterUpdate("continue-browsing"); }}>Clear cart</button>
             </div>
           </>
