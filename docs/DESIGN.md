@@ -140,3 +140,16 @@ How to use it:
   code to `lib/menu-photos.ts`. Items without a photo show the placeholder tile.
 - Staff and owner screens: same tokens, denser and larger. Build them on `bg-paper`/`bg-ink`
   with the status colours above.
+
+## Kitchen board (SCRUM-71, 2 Nov)
+
+`/staff` polls `GET /api/staff/tickets` every 2 s (paused while the tab is hidden) and shows two columns:
+**Cooking** (received, in progress) and **Ready for pickup**, each oldest paid first. Each card has a full-width
+status header in words, order number and name large, pickup time, a "since paid" timer and the lines.
+
+- **Late rule (agreed 2 Nov):** a ticket is late when it is received or in progress and its pickup time has
+  passed. Ready tickets are never late (no-shows stay Ready). Late shows as a red header reading
+  "Late · <status>", a red timer and a thick red border that pulses (`anim-late`, still under reduced motion).
+- Timers use the server's clock (from the response `Date` header), so a tablet with a wrong clock still counts right.
+- The optional new-order sound is off until someone taps the toggle (browsers block sound before that).
+- Logic lives in `lib/kitchen-board.ts` and `lib/kitchen-api.ts`, tested in `tests/kitchen-*.test.mjs`.
