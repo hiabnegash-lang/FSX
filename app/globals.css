@@ -154,7 +154,25 @@ dialog.sheet::backdrop {
   }
 }
 
+/* Kitchen board: a late ticket's thick red border pulses. With reduced motion it stays a still,
+   thick border (the "Late" label and red timer carry the meaning either way). */
+@keyframes late-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-status-late) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-status-late) 0%, transparent);
+  }
+}
+.anim-late {
+  animation: late-pulse 1.6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .anim-late {
+    animation: none;
+  }
   *,
   *::before,
   *::after {
