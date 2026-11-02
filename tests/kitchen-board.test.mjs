@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { loadModule } from "./helpers/load-module.mjs";
 
-const board = loadModule(new URL("../lib/kitchen-board.ts", import.meta.url), {});
+const ticketRules = loadModule(new URL("../lib/ticket.ts", import.meta.url), {});
+const board = loadModule(new URL("../lib/kitchen-board.ts", import.meta.url), { "./ticket": ticketRules });
 
 const at = (iso) => Date.parse(iso);
 const ticket = (id, ticketStatus, extra = {}) => ({
@@ -14,6 +15,18 @@ const ticket = (id, ticketStatus, extra = {}) => ({
   paidAt: "2026-11-02T18:00:00Z",
   lines: [],
   ...extra,
+});
+
+test("the button label follows nextStep() for each step, and there is no button after ready", () => {
+  assert.equal(board.actionLabel("received"), "Start cooking");
+  assert.equal(board.actionLabel("in_progress"), "Mark ready");
+  assert.equal(board.actionLabel("ready"), "Handed over");
+  assert.equal(board.actionLabel("completed"), null);
+  assert.equal(board.actionLabel("cancelled"), null);
+  // Each label names the step nextStep() would take, not a separate copy of the rules.
+  for (const from of ["received", "in_progress", "ready"]) {
+    assert.ok(ticketRules.nextStep(from), `${from} has a next step`);
+  }
 });
 
 test("every board status has a text label so colour is never the only signal", () => {

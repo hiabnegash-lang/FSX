@@ -1,7 +1,8 @@
+import { nextStep } from "./ticket";
 import type { TicketStatus } from "./types";
 import type { KitchenTicket } from "./views";
 
-// Plain logic for the kitchen and counter board (SCRUM-71). No React, no browser APIs,
+// Plain logic for the kitchen and counter board (SCRUM-71, SCRUM-75). No React, no browser APIs,
 // so it can be tested with `node --test`. The status rules themselves live in lib/ticket.ts.
 
 /** The statuses that appear on the board. completed and cancelled leave it. */
@@ -20,6 +21,20 @@ export function statusLabel(status: TicketStatus): string {
 
 export function isBoardStatus(status: TicketStatus): status is BoardStatus {
   return status === "received" || status === "in_progress" || status === "ready";
+}
+
+// Labels are keyed by the status the button moves TO, so they follow nextStep() rather than
+// repeating the order of the steps here.
+const ACTION_LABELS: Partial<Record<TicketStatus, string>> = {
+  in_progress: "Start cooking",
+  ready: "Mark ready",
+  completed: "Handed over",
+};
+
+/** Text of the one button on a card, or null when there is no forward step (or it is not a kitchen step). */
+export function actionLabel(status: TicketStatus): string | null {
+  const to = nextStep(status);
+  return to ? (ACTION_LABELS[to] ?? null) : null;
 }
 
 /**

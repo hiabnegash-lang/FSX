@@ -169,7 +169,14 @@ export function KitchenBoard() {
   const { cooking, ready } = boardColumns(tickets);
   const card = (t: KitchenTicket) => (
     <li key={t.id}>
-      <TicketCard ticket={t} nowMs={nowMs} isNew={freshIds.has(t.id)} />
+      <TicketCard
+        ticket={t}
+        nowMs={nowMs}
+        isNew={freshIds.has(t.id)}
+        onAdvanced={refresh}
+        onStale={refresh}
+        onSignedOut={leave}
+      />
     </li>
   );
 

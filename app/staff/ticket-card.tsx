@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { advanceTicket, KitchenError } from "@/lib/kitchen-api";
 import {
+  actionLabel,
   elapsedSpoken,
   elapsedText,
   isBoardStatus,
@@ -9,10 +12,11 @@ import {
   sizeText,
   statusLabel,
 } from "@/lib/kitchen-board";
+import type { TicketStatus } from "@/lib/types";
 import type { KitchenTicket } from "@/lib/views";
 
 // One ticket, in the DoorDash tablet layout from docs/DESIGN.md: full-width status header, order number
-// and name large, the timer always visible, then the lines. Only fields from
+// and name large, the timer always visible, the lines, and ONE button at the bottom. Only fields from
 // KitchenTicket are used, so no email, phone, price or payment detail can appear here.
 
 const HEADER: Record<"received" | "in_progress" | "ready", string> = {
@@ -21,10 +25,55 @@ const HEADER: Record<"received" | "in_progress" | "ready", string> = {
   ready: "bg-status-ready",
 };
 
-export function TicketCard({ ticket, nowMs, isNew }: { ticket: KitchenTicket; nowMs: number; isNew: boolean }) {
+/** Large, high-contrast and at least 64px tall: easy to hit with a wet or gloved hand. */
+const actionButton =
+  "sticker flex min-h-16 w-full items-center justify-center rounded-xl bg-ink px-4 py-3 text-2xl font-bold text-paper focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-brand-blue disabled:cursor-wait disabled:opacity-60 disabled:shadow-none";
+
+export function TicketCard({
+  ticket,
+  nowMs,
+  isNew,
+  onAdvanced,
+  onStale,
+  onSignedOut,
+}: {
+  ticket: KitchenTicket;
+  nowMs: number;
+  isNew: boolean;
+  onAdvanced: () => void;
+  onStale: () => void;
+  onSignedOut: () => void;
+}) {
+  // Both remember which status they belong to, so they clear themselves once the ticket moves on.
+  const [pendingFrom, setPendingFrom] = useState<TicketStatus | null>(null);
+  const [failure, setFailure] = useState<{ from: TicketStatus; message: string } | null>(null);
+
   const status = ticket.ticketStatus;
   const late = isLate(ticket, nowMs);
+  const label = actionLabel(status);
+  const busy = pendingFrom === status;
+  const error = failure?.from === status ? failure.message : null;
   const headingId = `ticket-${ticket.id}`;
+
+  async function advance() {
+    if (busy) return;
+    setFailure(null);
+    setPendingFrom(status);
+    try {
+      await advanceTicket(ticket.id, status);
+      // Stay disabled until the refreshed board shows the new status, so a second tap cannot repeat it.
+      onAdvanced();
+    } catch (err) {
+      setPendingFrom(null);
+      const kitchenError = err instanceof KitchenError ? err : null;
+      if (kitchenError?.kind === "signed_out" || kitchenError?.kind === "forbidden") {
+        onSignedOut();
+        return;
+      }
+      setFailure({ from: status, message: kitchenError?.message ?? "Could not update this ticket. Try again." });
+      if (kitchenError?.kind === "changed" || kitchenError?.kind === "not_found") onStale();
+    }
+  }
 
   return (
     <article
@@ -91,6 +140,19 @@ export function TicketCard({ ticket, nowMs, isNew }: { ticket: KitchenTicket; no
           })}
         </ul>
       </div>
+
+      {label && (
+        <footer className="p-5 pt-0">
+          <button type="button" className={actionButton} onClick={advance} disabled={busy} aria-describedby={error ? `${headingId}-error` : undefined}>
+            {busy ? "Saving…" : label}
+          </button>
+          {error && (
+            <p id={`${headingId}-error`} role="alert" className="mt-3 rounded border-2 border-status-late bg-paper px-3 py-2 text-lg font-semibold text-status-late">
+              {error}
+            </p>
+          )}
+        </footer>
+      )}
     </article>
   );
 }

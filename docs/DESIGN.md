@@ -141,11 +141,12 @@ How to use it:
 - Staff and owner screens: same tokens, denser and larger. Build them on `bg-paper`/`bg-ink`
   with the status colours above.
 
-## Kitchen board (SCRUM-71, 2 Nov)
+## Kitchen board (SCRUM-71, SCRUM-75, 2 Nov)
 
 `/staff` polls `GET /api/staff/tickets` every 2 s (paused while the tab is hidden) and shows two columns:
 **Cooking** (received, in progress) and **Ready for pickup**, each oldest paid first. Each card has a full-width
-status header in words, order number and name large, pickup time, a "since paid" timer and the lines.
+status header in words, order number and name large, pickup time, a "since paid" timer, the lines and one
+button ("Start cooking", "Mark ready", "Handed over"). There is no cancel button; cancelling is owner-only.
 
 - **Late rule (agreed 2 Nov):** a ticket is late when it is received or in progress and its pickup time has
   passed. Ready tickets are never late (no-shows stay Ready). Late shows as a red header reading
