@@ -47,7 +47,7 @@ Check every pair against 4.5:1 before committing — RTM row 2.02 commits us to 
 - Scale: 12 / 14 / 16 / 20 / 24 / 32 / 48. Staff view starts one step larger.
 
 ## Cards
-The menu item card is the workhorse — it appears 42 times on the menu page.
+The menu item card is the workhorse — it appears 46 times on the menu page.
 - Item code as a small muted monospace chip (G1, C7) — the restaurant and the customers both use
   these codes, so keep them visible
 - Name at 16–18px semibold
@@ -79,3 +79,78 @@ Ask the sponsor whether an original vector file exists before anyone traces it.
 1. Does the sponsor have the logo as a vector file, or only the printed menu?
 2. Food photography — do we have any? It changes the menu card layout completely.
 3. Heading typeface — pick one and commit; it's the single most identity-defining choice here.
+
+---
+
+## Built foundation (T29, 21 Oct)
+
+Look: a printed-menu "sticker" style. Brand red and blue on cream with faint paper dots, thick ink
+outlines and hard offset shadows that lift on hover and press on click. Fraunces (soft serif)
+headings, DM Sans body. One light theme only; no dark mode.
+
+Hero: a red band with the headline, lead-time chips and a steaming bowl with crossed chopsticks
+(`components/hero-art.tsx`). Tiles show the item code in big outlined letters until a photo exists.
+Footer: wordmark plus three bold facts (address, pickup only, hours). No small print.
+
+Menu page: one category at a time (tab bar stays pinned; the choice is kept in the URL as
+`#category-<id>`; each tab shows how many items from that category are in the cart), and a grid of
+tiles (2 per row on phones, up to 4 on desktop).
+
+Adding to the cart:
+- **Plus adds one straight away, no pop-up.** Once an item is in the cart the tile shows a count
+  badge and a minus / count / plus control. The count on a tile is the total across every option of that item (for example plain and spicy rice together). Plus and minus act on the item's most recent cart line (the one last added to or merged into); to change another option, open the options sheet or the cart.
+- **Taking out the last one asks first:** minus on a quantity of 1 opens "Remove it?" (Keep it / Remove).
+- **Items that need a choice** (anything with sizes, and the Combination Plate) open the options sheet
+  on the first plus. Tapping a tile's name opens the same sheet for any item: size chips, combo
+  half-order chips, spicy switch, optional note, plus/minus quantity, and an Add button with the line
+  total. Adding something identical to a line already in the cart raises that line's quantity.
+- Header cart is a cart icon with an item-count badge plus the running subtotal. A floating cart bar
+  also shows on phones.
+
+Closed, allergens and orders (for checkout and other customer screens):
+- **Closed:** `useCart().ordersOpen` is `false` when the restaurant is closed right now (`null` when the
+  hours could not be loaded or come back empty, which allows ordering; the server still enforces hours).
+  While closed the cart refuses `add` and any `edit` that raises a quantity (lowering and removing still
+  work), so a screen cannot get around it; disable your own buttons too. A banner shows under
+  the header and adding is disabled. **Checkout should disable "Place order" when `ordersOpen === false`.**
+- **Allergens:** `allergenNotice(description)` (`lib/allergens.ts`) pulls "Contains ..." out of a menu
+  description; the tile and the options sheet show it as a yellow badge so it is never cut off. A real
+  allergen field on `menu_items` would be better (an ERD change, not done).
+- **Cart totals:** `app/(customer)/cart-totals.tsx` shows subtotal, tax (same `taxCents` as the server) and total.
+- **Your order shortcut:** the order page remembers the last order in `localStorage` for 12 hours
+  (`lib/last-order.ts`); the header shows "Your order #0042" while it is not finished.
+- `/` redirects to `/menu` (`next.config.ts`); `app/not-found.tsx` and `app/error.tsx` are branded.
+
+Logo: the restaurant's cat-and-ramen mark is the favicon and Apple touch icon (`app/icon.png`,
+`app/apple-icon.png`) and sits beside the wordmark in the header and footer
+(`public/brand/chopstix-mark.webp`).
+
+How to use it:
+- **Colours and fonts** live in `app/globals.css` (`@theme`). Use the classes: `bg-cream`, `bg-paper`,
+  `text-ink`, `text-muted`, `text-brand-red`, `text-brand-blue`, `bg-mustard`, `border-line`, `bg-tile`,
+  `font-heading`. Do not paste hex values into components.
+- **Sticker look:** add the `sticker` class (outline + shadow + lift/press). `anim-rise`, `anim-pop`
+  and `anim-bump` are the shared animations; all are switched off for `prefers-reduced-motion`.
+- **Staff status colours** are `bg-status-received`, `bg-status-progress`, `bg-status-ready`,
+  `bg-status-late`. Pair each with a label (never colour alone).
+- **Buttons:** `btnPrimary` (one per screen) and `btnSecondary` from `lib/ui.ts`.
+- **Customer shell:** `app/(customer)/site-header.tsx` (wordmark, open/closed, cart, add-to-cart toast)
+  and `components/site-footer.tsx`. Every customer page gets them from the layout.
+- **Dish photos:** save `public/menu/<code>.jpg` (e.g. `G1.jpg`, landscape ~4:3, under 300 KB) and add the
+  code to `lib/menu-photos.ts`. Items without a photo show the placeholder tile.
+- Staff and owner screens: same tokens, denser and larger. Build them on `bg-paper`/`bg-ink`
+  with the status colours above.
+
+## Kitchen board (SCRUM-71, SCRUM-75, 2 Nov)
+
+`/staff` polls `GET /api/staff/tickets` every 2 s (paused while the tab is hidden) and shows two columns:
+**Cooking** (received, in progress) and **Ready for pickup**, each oldest paid first. Each card has a full-width
+status header in words, order number and name large, pickup time, a "since paid" timer, the lines and one
+button ("Start cooking", "Mark ready", "Handed over"). There is no cancel button; cancelling is owner-only.
+
+- **Late rule (agreed 2 Nov):** a ticket is late when it is received or in progress and its pickup time has
+  passed. Ready tickets are never late (no-shows stay Ready). Late shows as a red header reading
+  "Late · <status>", a red timer and a thick red border that pulses (`anim-late`, still under reduced motion).
+- Timers use the server's clock (from the response `Date` header), so a tablet with a wrong clock still counts right.
+- The optional new-order sound is off until someone taps the toggle (browsers block sound before that).
+- Logic lives in `lib/kitchen-board.ts` and `lib/kitchen-api.ts`, tested in `tests/kitchen-*.test.mjs`.

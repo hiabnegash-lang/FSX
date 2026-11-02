@@ -5,13 +5,13 @@ This file is your task list plus copy-paste prompts.
 
 ## Setup (one time)
 ```bash
-git clone https://github.com/AgentPierre/FSX.git && cd FSX
+git clone https://github.com/hiabnegash-lang/FSX.git && cd FSX
 git checkout dev
 npm install
 cp .env.example .env.local        # get values from Hiab — never commit this file
 npm run dev
 ```
-Every task: `git checkout dev && git pull` → `git checkout -b feature/jose-<task>` → build → PR
+Every task: `git checkout dev && git pull` → `git checkout -b feature/T<id>-jose-<desc>` → build → PR
 into `dev` → tag Hiab for review.
 
 ---
@@ -48,7 +48,7 @@ formally.
 
 ### W3 — Customer menu mockup
 > Read CLAUDE.md and docs/menu.csv. Build a static mockup of the customer menu page as a
-> self-contained HTML file in docs/mockups/menu.html using the real menu data — all 42 items with
+> self-contained HTML file in docs/mockups/menu.html using the real menu data — all 46 items with
 > real names, codes and prices, grouped by category. Include: a sticky category nav, item cards
 > showing code, name, description and price, a spicy indicator, a size selector on fried rice and
 > catering trays, an "add to cart" affordance, and a cart summary. Mobile-first; it must look right
