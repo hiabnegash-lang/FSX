@@ -1,5 +1,6 @@
 import { businessHoursLabel } from "@/lib/menu-display";
 import type { BusinessHour } from "@/lib/types";
+import Link from "next/link";
 
 export function SiteFooter({ businessHours }: { businessHours: BusinessHour[] | null }) {
   return (
@@ -15,6 +16,9 @@ export function SiteFooter({ businessHours }: { businessHours: BusinessHour[] | 
           <li>Pickup only</li>
           <li>{businessHours && businessHours.length > 0 ? businessHoursLabel(businessHours) : "Business hours are currently unavailable. Please refresh the page."}</li>
         </ul>
+        <Link href="/login" className="inline-flex min-h-11 items-center rounded px-1 py-2 text-sm font-medium text-muted underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue">
+          Staff sign in
+        </Link>
       </div>
     </footer>
   );

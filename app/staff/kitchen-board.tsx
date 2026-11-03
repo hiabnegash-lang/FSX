@@ -7,6 +7,7 @@ import { boardColumns, clockOffsetMs, newTicketIds } from "@/lib/kitchen-board";
 import type { KitchenTicket } from "@/lib/views";
 import { createChime, type Chime } from "./new-order-sound";
 import { TicketCard } from "./ticket-card";
+import { SignOutButton } from "@/components/sign-out-button";
 
 // Polls GET /api/staff/tickets every 2 s (paid orders must show within 5 s, RTM F15). The server
 // checks the role on every request; this component only reacts to what it answers.
@@ -241,6 +242,7 @@ function BoardShell({
             </p>
           )}
           {actions}
+          <SignOutButton onDark />
         </div>
       </header>
       {children}

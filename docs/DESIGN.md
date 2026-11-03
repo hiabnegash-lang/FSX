@@ -172,3 +172,9 @@ History shows the same returned orders as cards below the wide desktop breakpoin
 The kitchen board uses a dark high-contrast header, separate cooking/ready count chips, and blue/green column heading bands with written labels and counts. Ticket numbers are 48 px; customer names and boxed pickup times remain prominent. Every card retains one 64 px minimum action button, with a pressed state and a high-contrast Saving state.
 
 A new ticket rises in for 240 ms; a ticket entering the Ready column slides/fades in for 260 ms. Entrance animation sits on a wrapper so the article's late-border pulse remains independent. Existing keyed tickets do not replay the Ready animation on unchanged polls. All kitchen animation is disabled under reduced motion. Existing polling, grid breakpoints, status transitions, sorting, sound behavior and late rules are unchanged. Contact and payment fields remain excluded from kitchen tickets.
+
+## Staff entry and session controls (SCRUM-72)
+
+The customer footer has a quiet Staff sign in link to /login, with a 44 px target and visible focus. A reusable Sign out button appears in the kitchen header across all board states and in a shared owner session header across owner routes, without editing menu/report pages. Existing owner-to-kitchen navigation remains on the dashboard; staff receive no owner navigation.
+
+Sign out awaits the existing Supabase browser client's auth.signOut before replacing the route with /login and refreshing. Client-construction failure permits the requested local-stub fallback to /login. Returned errors and rejected requests show a retryable message while keeping the current screen. Busy state disables repeat taps. Login role routing and server permission checks are unchanged; no new motion was added.
