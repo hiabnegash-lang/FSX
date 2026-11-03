@@ -49,9 +49,9 @@ test("prices accept exact positive decimal dollars and reject malformed or free 
     false,
   );
 });
-function setup(role = "owner") {
+function setup(role = "owner", existingFixture, sharedGlobal = {}) {
   const calls = [];
-  const fixture = [
+  const fixture = existingFixture ?? [
     { id: "category", name: "Appetizers", sortOrder: 0, items: [] },
   ];
   const service = loadModule(
@@ -74,10 +74,58 @@ function setup(role = "owner") {
       "./errors": errors,
       "./owner-menu-validation": validation,
     },
-    { crypto, Map, Date },
+    { crypto, Map, Date, globalThis: sharedGlobal },
   );
-  return { service, calls, fixture };
+  return { service, calls, fixture, sharedGlobal };
 }
+
+test("menu fixture survives separate page/action module loads", () => {
+  const sharedGlobal = {};
+  const path = new URL("../lib/data/menu.ts", import.meta.url);
+  const actionMenu = loadModule(
+    path,
+    {},
+    { globalThis: sharedGlobal },
+  ).menuFixture;
+  actionMenu[0].items[0].name = "Edited across runtimes";
+  actionMenu.push({
+    id: "demo-category",
+    name: "New category",
+    sortOrder: 99,
+    items: [],
+  });
+  const pageMenu = loadModule(
+    path,
+    {},
+    { globalThis: sharedGlobal },
+  ).menuFixture;
+  assert.equal(pageMenu[0].items[0].name, "Edited across runtimes");
+  assert.equal(pageMenu.at(-1).id, "demo-category");
+});
+
+test("separate owner service loads share item versions and price history", async () => {
+  const first = setup();
+  await first.service.saveOwnerItem({}, edit);
+  const created = (await first.service.readOwnerMenu({})).categories[0]
+    .items[0];
+  const second = setup("owner", first.fixture, first.sharedGlobal);
+  assert.equal(
+    (await second.service.readOwnerMenu({})).categories[0].items[0].version,
+    created.version,
+  );
+  await second.service.saveOwnerItem(
+    {},
+    {
+      ...edit,
+      id: created.id,
+      version: created.version,
+      sizes: [{ name: "regular", price: "2.25" }],
+    },
+  );
+  const reread = await first.service.readOwnerMenu({});
+  assert.equal(reread.categories[0].items[0].sizes[0].priceCents, 225);
+  assert.equal(reread.history[0].new_price_cents, 225);
+});
 test("all menu operations reject staff before reading or mutating", async () => {
   const { service, calls, fixture } = setup("staff");
   await assert.rejects(service.readOwnerMenu({}), { status: 403 });

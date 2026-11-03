@@ -54,8 +54,16 @@ function check(error: { code?: string } | null) {
     "The menu could not be saved or loaded. Please try again.",
   );
 }
-const versions = new Map<string, string>();
-const stubHistory: PriceChange[] = [];
+const stubGlobal = globalThis as unknown as {
+  __fsxOwnerMenuState?: {
+    versions: Map<string, string>;
+    history: PriceChange[];
+  };
+};
+const { versions, history: stubHistory } = (stubGlobal.__fsxOwnerMenuState ??= {
+  versions: new Map<string, string>(),
+  history: [],
+});
 export async function readOwnerMenu(
   request: AuthRequest,
 ): Promise<{ categories: EditableCategory[]; history: PriceChange[] }> {

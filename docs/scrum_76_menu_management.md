@@ -14,3 +14,4 @@ Patterns: Square item variations/table editing and Shopify's restrained operatio
 - Archived items must be included in owner reads but excluded from public reads.
 - Staff can change availability, but the menu editor and all its actions require owner access.
 - Keep an editor's action feedback mounted across revalidation; refresh its version prop without resetting the form state.
+- Next.js actions, pages and API routes can load separate module instances. Mutable local-demo menu data, versions and price history must share process-wide state; module-local arrays can report success while the next page read returns unchanged fixtures.
