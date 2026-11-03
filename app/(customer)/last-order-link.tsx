@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LAST_ORDER_CHANGED, msUntilExpiry, readLastOrder, type LastOrder } from "@/lib/last-order";
-import { pill } from "@/lib/ui";
+import { btnSecondary } from "@/lib/ui";
 
 /** "Your order #0042" shortcut back to the order page, shown only on a device that has a recent order. */
 export function LastOrderLink({ className = "" }: { className?: string }) {
@@ -32,8 +32,22 @@ export function LastOrderLink({ className = "" }: { className?: string }) {
   return (
     <Link
       href={`/order/${order.id}`}
-      className={`${pill} inline-flex items-center bg-paper text-sm text-brand-blue underline decoration-2 underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue min-h-11 ${className}`}
+      className={`${btnSecondary} text-sm ${className}`}
     >
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        className="h-4 w-4 shrink-0"
+      >
+        <path
+          d="M7 3h10v18l-2.5-2-2.5 2-2.5-2L7 21V3Z"
+          strokeLinejoin="round"
+        />
+        <path d="M10 8h4m-4 4h4" strokeLinecap="round" />
+      </svg>
       Your order #{order.orderNumber}
     </Link>
   );

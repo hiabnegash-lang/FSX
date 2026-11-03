@@ -133,6 +133,24 @@ button.sticker:enabled:active,
 .anim-rise {
   animation: rise 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+.order-progress-fill {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 300ms ease-out;
+}
+.order-progress-fill[data-complete="true"] {
+  transform: scaleY(1);
+}
+@media (min-width: 640px) {
+  .order-progress-fill {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .order-progress-fill[data-complete="true"] {
+    transform: scaleX(1);
+  }
+}
+
 .anim-pop {
   animation: pop 220ms ease-out both;
 }
