@@ -6,10 +6,11 @@ insert into auth.users(id) values ('77000000-0000-0000-0000-000000000001'),('770
 insert into public.staff_users(id,role) values ('77000000-0000-0000-0000-000000000001','owner'),('77000000-0000-0000-0000-000000000002','staff');
 insert into public.orders(id,display_order_number,customer_name,customer_email,pickup_at,earliest_pickup_at,
   subtotal_cents,tax_rate,tax_cents,total_cents,payment_status,ticket_status) values
-  ('77000000-0000-0000-0000-000000000011','REPORT-1','Test','test@example.invalid',now()+interval '1 hour',now()+interval '15 minutes',300,0.0825,25,325,'paid','received'),
-  ('77000000-0000-0000-0000-000000000012','REPORT-2','Test','test@example.invalid',now()+interval '1 hour',now()+interval '15 minutes',150,0.0825,12,162,'paid','received'),
+  ('77000000-0000-0000-0000-000000000011','REPORT-1','Test','test@example.invalid',now()+interval '1 hour',now()+interval '15 minutes',300,0.0825,25,325,'pending_payment',null),
+  ('77000000-0000-0000-0000-000000000012','REPORT-2','Test','test@example.invalid',now()+interval '1 hour',now()+interval '15 minutes',150,0.0825,12,162,'pending_payment',null),
   ('77000000-0000-0000-0000-000000000013','REPORT-3','Test','test@example.invalid',now()+interval '1 hour',now()+interval '15 minutes',150,0.0825,12,162,'pending_payment',null),
-  ('77000000-0000-0000-0000-000000000014','REPORT-4','Test','test@example.invalid',now()+interval '1 hour',now()+interval '15 minutes',150,0.0825,12,162,'paid','received');
+  ('77000000-0000-0000-0000-000000000014','REPORT-4','Test','test@example.invalid',now()+interval '1 hour',now()+interval '15 minutes',150,0.0825,12,162,'pending_payment',null);
+update public.orders set payment_status='paid',ticket_status='received' where display_order_number in ('REPORT-1','REPORT-2','REPORT-4');
 insert into public.payments(order_id,stripe_checkout_session_id,amount_cents,paid_at) values
   ('77000000-0000-0000-0000-000000000011','cs_report_1',325,'2026-11-01T05:00:00Z'),
   ('77000000-0000-0000-0000-000000000012','cs_report_2',162,'2026-11-02T05:59:59Z'),

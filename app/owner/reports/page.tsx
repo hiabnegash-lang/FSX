@@ -114,6 +114,7 @@ export default async function Page({
           ))}
         </div>
         <form
+          key={`${start}:${end}`}
           method="get"
           action="/owner/reports"
           className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_auto]"
@@ -143,7 +144,10 @@ export default async function Page({
             />
           </label>
           <button
-            className={`${button} border-brand-blue bg-brand-blue text-white`}
+            className={button
+              .replace("border-line", "border-brand-blue")
+              .replace("bg-paper", "bg-brand-blue")
+              .replace("text-brand-blue", "text-white")}
           >
             Apply dates
           </button>
