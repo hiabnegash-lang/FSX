@@ -457,6 +457,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      owner_operational_reports: {
+        Args: { p_start: string; p_end: string }
+        Returns: Json
+      }
       owner_save_menu_item: {
         Args: { p_item: Json }
         Returns: string
