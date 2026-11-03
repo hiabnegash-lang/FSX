@@ -457,6 +457,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      owner_save_menu_item: {
+        Args: { p_item: Json }
+        Returns: string
+      }
       attach_checkout_session: {
         Args: { p_order_id: string; p_session_id: string }
         Returns: undefined
