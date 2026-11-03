@@ -133,6 +133,24 @@ button.sticker:enabled:active,
 .anim-rise {
   animation: rise 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+.order-progress-fill {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 300ms ease-out;
+}
+.order-progress-fill[data-complete="true"] {
+  transform: scaleY(1);
+}
+@media (min-width: 640px) {
+  .order-progress-fill {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .order-progress-fill[data-complete="true"] {
+    transform: scaleX(1);
+  }
+}
+
 .anim-pop {
   animation: pop 220ms ease-out both;
 }
@@ -169,7 +187,58 @@ dialog.sheet::backdrop {
   animation: late-pulse 1.6s ease-in-out infinite;
 }
 
+/* Customer stage loops have a short gesture and a quiet hold, with shared pause controls. */
+.order-stage-art g { transform-box: fill-box; transform-origin: center; }
+@keyframes order-float {
+  0%, 35%, 100% { transform: none; }
+  17% { transform: translateY(-2px); }
+}
+@keyframes order-stamp {
+  0%, 30%, 100% { transform: none; }
+  12% { transform: scale(.94) rotate(-3deg); }
+  20% { transform: scale(1.025); }
+}
+@keyframes order-wok {
+  0%, 26%, 100% { transform: none; }
+  9% { transform: translateY(-3px) rotate(-8deg); }
+  18% { transform: translateY(1px) rotate(2deg); }
+}
+@keyframes order-toss {
+  0%, 27%, 100% { transform: none; }
+  12% { transform: translate(5px, -13px) rotate(10deg); }
+}
+@keyframes order-steam {
+  0%, 100% { opacity: .35; transform: translateY(3px); }
+  40% { opacity: 1; transform: translateY(-3px); }
+  70% { opacity: .35; transform: translateY(-6px); }
+}
+@keyframes order-bag {
+  0%, 32%, 100% { transform: none; }
+  12% { transform: rotate(-2deg); }
+  23% { transform: rotate(1.5deg); }
+}
+@keyframes order-rays {
+  0%, 40%, 100% { opacity: .4; }
+  20% { opacity: 1; }
+}
+@keyframes order-check {
+  0% { stroke-dashoffset: 50; opacity: 0; }
+  4% { opacity: 1; }
+  20%, 85% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.order-art-receipt { animation: order-float 3.6s ease-in-out infinite; }
+.order-art-stamp, .order-art-thanks { animation: order-stamp 3.6s ease-in-out infinite; }
+.order-art-bag { transform-origin: center bottom !important; animation: order-bag 3.2s ease-in-out infinite; }
+.order-art-wok { transform-origin: 60% 85% !important; animation: order-wok 2.4s ease-in-out infinite; }
+.order-art-food { animation: order-toss 2.4s ease-in-out infinite; }
+.order-art-steam { animation: order-steam 2.4s ease-in-out infinite; }
+.order-art-ready-rays, .order-art-farewell { animation: order-rays 3.2s ease-in-out infinite; }
+.order-art-check { stroke-dasharray: 50; animation: order-check 3.6s ease-out infinite; }
+[data-order-motion-paused="true"] .order-stage-art :is(g, path) { animation-play-state: paused; }
+
 @media (prefers-reduced-motion: reduce) {
+  .order-stage-art g, .order-stage-art path { animation: none !important; }
   .anim-late {
     animation: none;
   }

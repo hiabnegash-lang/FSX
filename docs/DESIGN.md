@@ -154,3 +154,9 @@ button ("Start cooking", "Mark ready", "Handed over"). There is no cancel button
 - Timers use the server's clock (from the response `Date` header), so a tablet with a wrong clock still counts right.
 - The optional new-order sound is off until someone taps the toggle (browsers block sound before that).
 - Logic lives in `lib/kitchen-board.ts` and `lib/kitchen-api.ts`, tested in `tests/kitchen-*.test.mjs`.
+
+## Customer order stage artwork and header status (T29)
+
+The customer header shows a compact outlined status link with the order number, a written stage label, and matching artwork. On the order page it shares the page's existing response; elsewhere one shared browser refresher checks the existing public order endpoint every 10 seconds (3 seconds during payment confirmation), pauses while hidden, resumes on visibility, and stops on final states. A failed refresh says "Status unavailable" rather than presenting a stale stage as current. Finished order shortcuts are forgotten away from the order page as before.
+
+Stage illustrations are code-native inline SVG: a stamped receipt for Paid, a wok tossing ingredients for Being prepared, a takeaway bag for Ready for pickup, and a completion seal for Picked up. The large illustration appears on the order page; the compact version appears in the header. Animations loop continuously in gentle 2.4–3.6 second cycles with a quiet hold between gestures. Unchanged refreshes do not restart a loop. There are no customer-facing motion controls; loops pause automatically while the tab is hidden. Reduced motion shows still artwork. Pending, expired and cancelled states do not show progress artwork. Status always has a text label.
