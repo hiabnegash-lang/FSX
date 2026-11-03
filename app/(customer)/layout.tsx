@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getMenu, store } from "@/lib/data";
 import { SiteFooter } from "@/components/site-footer";
 import { CartProvider } from "./cart-provider";
+import { OrderShortcutProvider } from "./order-shortcut-provider";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ async function CustomerData({ children }: { children: React.ReactNode }) {
       return null;
     }),
   ]);
-  return <CartProvider menu={menu} settings={settings} businessHours={businessHours}>{children}<SiteFooter businessHours={businessHours} /></CartProvider>;
+  return <OrderShortcutProvider><CartProvider menu={menu} settings={settings} businessHours={businessHours}>{children}<SiteFooter businessHours={businessHours} /></CartProvider></OrderShortcutProvider>;
 }
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {

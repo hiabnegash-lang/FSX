@@ -187,7 +187,42 @@ dialog.sheet::backdrop {
   animation: late-pulse 1.6s ease-in-out infinite;
 }
 
+/* Customer order illustrations play once on entering a stage, never on an unchanged refresh. */
+.order-stage-art g { transform-box: fill-box; transform-origin: center; }
+@keyframes order-settle {
+  from { opacity: 0; transform: translateY(7px) rotate(-4deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes order-stamp {
+  from { opacity: 0; transform: scale(1.3) rotate(10deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes order-wok {
+  0%, 100% { transform: none; }
+  40% { transform: translateY(-4px) rotate(-9deg); }
+  70% { transform: translateY(1px) rotate(3deg); }
+}
+@keyframes order-toss {
+  0%, 100% { transform: none; }
+  45% { transform: translate(5px, -15px) rotate(12deg); }
+}
+@keyframes order-steam {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes order-check {
+  from { stroke-dashoffset: 50; }
+  to { stroke-dashoffset: 0; }
+}
+.order-art-receipt, .order-art-bag { animation: order-settle 300ms ease-out both; }
+.order-art-stamp, .order-art-thanks { animation: order-stamp 350ms ease-out both; }
+.order-art-wok { animation: order-wok 400ms ease-in-out; }
+.order-art-food { animation: order-toss 400ms ease-in-out; }
+.order-art-steam, .order-art-ready-rays, .order-art-farewell { animation: order-steam 400ms ease-out both; }
+.order-art-check { stroke-dasharray: 50; animation: order-check 350ms ease-out both; }
+
 @media (prefers-reduced-motion: reduce) {
+  .order-stage-art g, .order-stage-art path { animation: none !important; }
   .anim-late {
     animation: none;
   }

@@ -6,6 +6,8 @@ import type { PublicOrder } from "@/lib/public-order";
 import { clearLastOrder, saveLastOrder } from "@/lib/last-order";
 
 import { useCart } from "../../cart-provider";
+import { useOrderShortcut } from "../../order-shortcut-provider";
+import { OrderStageArt } from "../../order-stage-art";
 
 const PENDING_MS = 3_000; // waiting for the Stripe webhook
 const ACTIVE_MS = 10_000; // paid, ticket still moving
@@ -113,9 +115,15 @@ function isFinal(o: PublicOrder) {
 
 export function OrderStatus({ initial }: { initial: PublicOrder }) {
   const cart = useCart();
+  const { publish } = useOrderShortcut();
   const [order, setOrder] = useState(initial);
   const [lost, setLost] = useState(false);
   const [tick, setTick] = useState(0);
+
+  // Share the existing page response with the header; no new page request or polling timer.
+  useEffect(() => {
+    publish({ id: order.id, orderNumber: order.orderNumber, paymentStatus: order.paymentStatus, ticketStatus: order.ticketStatus }, lost);
+  }, [order.id, order.orderNumber, order.paymentStatus, order.ticketStatus, lost, publish]);
 
   // Remember this order for the "Your order" shortcut on the menu; forget it once it is finished.
   const finished = isFinal(order);
@@ -184,16 +192,19 @@ export function OrderStatus({ initial }: { initial: PublicOrder }) {
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="rounded-card border-2 border-ink bg-paper p-5 shadow-[4px_4px_0_var(--color-ink)] sm:p-8">
         {/* One live region announces status and connection changes without repeating the receipt. */}
-        <div role="status" aria-live="polite" aria-atomic="true">
-          <h1 className="break-words text-3xl font-black text-brand-blue sm:text-4xl">
-            {headline}
-          </h1>
-          <p className="mt-3 text-lg leading-relaxed">{detail}</p>
-          {lost && (
-            <p className="mt-3 text-base font-medium text-muted">
-              Having trouble reaching the server. Still trying…
-            </p>
-          )}
+        <div className="flex flex-col-reverse items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div role="status" aria-live="polite" aria-atomic="true" className="min-w-0">
+            <h1 className="break-words text-3xl font-black text-brand-blue sm:text-4xl">
+              {headline}
+            </h1>
+            <p className="mt-3 text-lg leading-relaxed">{detail}</p>
+            {lost && (
+              <p className="mt-3 text-base font-medium text-muted">
+                Having trouble reaching the server. Still trying…
+              </p>
+            )}
+          </div>
+          {showProgress && <OrderStageArt key={ticketStatus} stage={ticketStatus ?? "received"} />}
         </div>
         {showProgress && (
           <OrderProgress status={ticketStatus ?? "received"} />
