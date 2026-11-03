@@ -103,6 +103,25 @@ test("menu fixture survives separate page/action module loads", () => {
   assert.equal(pageMenu.at(-1).id, "demo-category");
 });
 
+test("hot-reloaded stub store keeps orders while refreshing its menu reference", async () => {
+  const sharedGlobal = {};
+  const path = new URL("../lib/data/stub.ts", import.meta.url);
+  const first = loadModule(
+    path,
+    { "./menu": { menuFixture: [{ id: "old" }] } },
+    { globalThis: sharedGlobal, crypto },
+  ).stubStore;
+  const order = await first.insertOrder({});
+  const currentMenu = [{ id: "current" }];
+  const second = loadModule(
+    path,
+    { "./menu": { menuFixture: currentMenu } },
+    { globalThis: sharedGlobal, crypto },
+  ).stubStore;
+  assert.equal((await second.getOrder(order.id)).id, order.id);
+  assert.equal((await second.getMenu())[0].id, "current");
+});
+
 test("separate owner service loads share item versions and price history", async () => {
   const first = setup();
   await first.service.saveOwnerItem({}, edit);
