@@ -31,6 +31,14 @@ Main agent owns CSS and integration. Recommended transform-box: fill-box and sen
 - Text contrast is unaffected; all status meaning remains in adjacent text.
 - No changes to polling, storage, APIs, protected files, or other contributors' edits.
 
+## Optical alignment refinement
+
+The receipt's body originally ended at y=101 while the wok and bags ended at y=106–107. Shifted the complete receipt illustration left 5 viewBox units and down 6 so its visual weight sits near x=80 and its lower edge shares the y=107 baseline. The ground shadow remains centered at x=80/y=111 for every stage. The wok's handle extends right intentionally; its bowl remains left of center so the full silhouette is balanced. Bag and completion geometry already shared the baseline and required no repositioning.
+
+Added block display to avoid an inline SVG text-baseline gap in non-flex contexts. Compact artwork now uses a 4-unit base outline (1 CSS pixel at compact size) rather than a 3-unit outline, improving phone readability without adding detail or changing the viewBox.
+
+The user's later request explicitly allows continuous animation on the customer's phone; that supersedes the earlier once-on-entry recommendation above. Main agent owns looping CSS, hidden-page pausing, layout alignment, and reduced-motion handling. Keep the receipt's new outer static translation separate from animated child groups so CSS transforms preserve the alignment adjustment.
+
 ## Lead integration and validation
 
 - Integrated large stage artwork into the customer order page and compact artwork into the redesigned header status link.
@@ -41,3 +49,12 @@ Main agent owns CSS and integration. Recommended transform-box: fill-box and sen
 - Browser checked all four stage illustrations and header labels, one nonrepeating 400 ms wok animation, no header requests on the order page, no duplicate requests between responsive links, menu updates, hidden pause and visibility resume, explicit failure labeling, 44 px target, and no overflow at 375/640/768/1024/1440 px.
 - Reduced-motion browser check confirms animation-name: none for every illustration group. Screenshots saved in docs/screenshots/T29-v2.
 - Production build passed with FSX_DATA_SOURCE=supabase; no application production-mode override was added.
+
+## Continuous motion and alignment revision
+
+- The user explicitly requested continuous animation, replacing the original one-time-animation constraint. Stage artwork now loops every 2.4–3.6 seconds, with a short gesture and quiet hold. Existing stage keys avoid restarts on unchanged status responses.
+- Receipt geometry now shares the other illustrations' baseline and optical center; compact strokes are clearer. Mobile order-page artwork is centered. Local gallery rows share heading, illustration, chip, description and button alignment.
+- Both header artwork and the order page have 44 px pause/play controls. They share state through the existing customer provider. Motion pauses while hidden; reduced motion disables artwork animation entirely.
+- Browser verified gallery row alignment, infinite animation continuing beyond a cycle, shared pause/play behavior, reduced-motion static artwork, and 375/640/768/1024/1440 px without overflow. Lint, typecheck and all 169 tests passed.
+- Updated screenshots: docs/screenshots/T29-v3. Original order-page polling remains unchanged.
+- Production build passed after the continuous-motion revision (FSX_DATA_SOURCE=supabase).

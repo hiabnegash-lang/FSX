@@ -15,11 +15,11 @@ export function OrderStageArt({
       focusable="false"
       viewBox="0 0 160 124"
       fill="none"
-      strokeWidth="3"
+      strokeWidth={compact ? 4 : 3}
       strokeLinecap="round"
       strokeLinejoin="round"
       data-stage={stage}
-      className={`order-stage-art shrink-0 stroke-ink ${compact ? "h-8 w-10" : "h-[110px] w-[140px]"}`}
+      className={`order-stage-art block shrink-0 stroke-ink ${compact ? "h-8 w-10" : "h-[110px] w-[140px]"}`}
     >
       <ellipse
         cx="80"
@@ -31,7 +31,7 @@ export function OrderStageArt({
       />
 
       {stage === "received" && (
-        <>
+        <g transform="translate(-5 6)">
           <g className="order-art-receipt">
             <path
               d="M43 13h65v88l-8-5-8 5-8-5-8 5-8-5-8 5-8-5-9 5V13Z"
@@ -56,7 +56,7 @@ export function OrderStageArt({
             d="m29 24-7-3m8 17-9 2m100-10 6-6"
             className="stroke-brand-red"
           />
-        </>
+        </g>
       )}
 
       {stage === "in_progress" && (

@@ -115,7 +115,7 @@ function isFinal(o: PublicOrder) {
 
 export function OrderStatus({ initial }: { initial: PublicOrder }) {
   const cart = useCart();
-  const { publish } = useOrderShortcut();
+  const { publish, motionPaused, toggleMotion } = useOrderShortcut();
   const [order, setOrder] = useState(initial);
   const [lost, setLost] = useState(false);
   const [tick, setTick] = useState(0);
@@ -192,7 +192,7 @@ export function OrderStatus({ initial }: { initial: PublicOrder }) {
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="rounded-card border-2 border-ink bg-paper p-5 shadow-[4px_4px_0_var(--color-ink)] sm:p-8">
         {/* One live region announces status and connection changes without repeating the receipt. */}
-        <div className="flex flex-col-reverse items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col-reverse items-stretch gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div role="status" aria-live="polite" aria-atomic="true" className="min-w-0">
             <h1 className="break-words text-3xl font-black text-brand-blue sm:text-4xl">
               {headline}
@@ -204,7 +204,12 @@ export function OrderStatus({ initial }: { initial: PublicOrder }) {
               </p>
             )}
           </div>
-          {showProgress && <OrderStageArt key={ticketStatus} stage={ticketStatus ?? "received"} />}
+          {showProgress && <div className="flex shrink-0 flex-col items-center self-center">
+            <OrderStageArt key={ticketStatus} stage={ticketStatus ?? "received"} />
+            <button type="button" onClick={toggleMotion} className="inline-flex min-h-11 items-center justify-center rounded-full px-3 text-sm font-bold text-brand-blue focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue">
+              {motionPaused ? "Play animation" : "Pause animation"}
+            </button>
+          </div>}
         </div>
         {showProgress && (
           <OrderProgress status={ticketStatus ?? "received"} />
