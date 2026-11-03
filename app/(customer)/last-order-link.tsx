@@ -1,40 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { LAST_ORDER_CHANGED, msUntilExpiry, readLastOrder, type LastOrder } from "@/lib/last-order";
-import { pill } from "@/lib/ui";
+import { orderStage, shortcutLabel } from "@/lib/order-shortcut";
+import { orderStatusLink } from "@/lib/ui";
+import { useOrderShortcut } from "./order-shortcut-provider";
+import { OrderStageArt } from "./order-stage-art";
 
-/** "Your order #0042" shortcut back to the order page, shown only on a device that has a recent order. */
+/** The current step is readable without opening the full receipt. */
 export function LastOrderLink({ className = "" }: { className?: string }) {
-  // Read after load: storage doesn't exist on the server, and the server and browser must render the same.
-  const [order, setOrder] = useState<LastOrder | null>(null);
-  // Stay in step with storage: this page saving or clearing the order (event), another tab doing so
-  // (storage event), and the 12-hour expiry (timer) all update the link without a page change.
-  useEffect(() => {
-    let expiry: ReturnType<typeof setTimeout> | undefined;
-    const sync = () => {
-      if (expiry) clearTimeout(expiry);
-      const current = readLastOrder();
-      setOrder(current);
-      if (current) expiry = setTimeout(sync, msUntilExpiry(current, Date.now()));
-    };
-    sync();
-    window.addEventListener("storage", sync);
-    window.addEventListener(LAST_ORDER_CHANGED, sync);
-    return () => {
-      if (expiry) clearTimeout(expiry);
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(LAST_ORDER_CHANGED, sync);
-    };
-  }, []);
+  const { order, status, unavailable } = useOrderShortcut();
   if (!order) return null;
+  const stage = status && !unavailable ? orderStage(status) : null;
+  const label = unavailable ? "Status unavailable" : status ? shortcutLabel(status) : "Checking status…";
   return (
-    <Link
-      href={`/order/${order.id}`}
-      className={`${pill} inline-flex items-center bg-paper text-sm text-brand-blue underline decoration-2 underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue min-h-11 ${className}`}
-    >
-      Your order #{order.orderNumber}
+    <Link href={`/order/${order.id}`} className={`${orderStatusLink} ${className}`}>
+      {stage ? <OrderStageArt key={stage} stage={stage} compact /> : (
+        <svg aria-hidden="true" viewBox="0 0 32 32" className="h-8 w-8 shrink-0" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M8 4h16v24l-4-2-4 2-4-2-4 2V4Z" strokeLinejoin="round" />
+          <path d="M12 11h8m-8 5h8" strokeLinecap="round" />
+        </svg>
+      )}
+      <span className="min-w-0 text-left">
+        <span className="block text-xs font-medium text-muted">Your order #{order.orderNumber}</span>
+        <span className="block text-sm font-bold leading-snug">{label}</span>
+      </span>
+      <span aria-hidden="true" className="ml-1 hidden text-lg sm:block">→</span>
     </Link>
   );
 }
