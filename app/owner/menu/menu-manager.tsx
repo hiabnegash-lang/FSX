@@ -12,7 +12,10 @@ const field =
   "block min-h-11 w-full rounded-md border border-muted bg-paper px-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue";
 const button =
   "inline-flex min-h-11 items-center justify-center rounded-md border border-line bg-paper px-4 py-2 font-semibold text-brand-blue focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue disabled:opacity-50";
-const primary = `${button} border-brand-blue bg-brand-blue text-white`;
+const primary = button
+  .replace("border-line", "border-brand-blue")
+  .replace("bg-paper", "bg-brand-blue")
+  .replace("text-brand-blue", "text-white");
 const initial = { ok: false, message: "" };
 const clock = new Intl.DateTimeFormat("en-US", {
   timeZone: "America/Chicago",
@@ -260,11 +263,14 @@ function ItemEditor({
           </label>
         </fieldset>
         <div className="flex flex-wrap items-center gap-4 border-t border-line pt-4 sm:col-span-2">
-          <button disabled={pending} className={primary}>
+          <button disabled={pending || (state.ok && !item)} className={primary}>
             {pending ? "Saving…" : "Save item"}
           </button>
           <p role={state.ok ? "status" : "alert"} className="text-sm">
             {state.message}
+            {state.ok && !item
+              ? " Close the editor to view or edit the new item."
+              : ""}
           </p>
         </div>
       </form>
