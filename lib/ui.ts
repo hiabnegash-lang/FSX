@@ -8,5 +8,8 @@ export const btnPrimary = `${base} bg-brand-red text-white`;
 /** Secondary actions (Edit, Cancel). */
 export const btnSecondary = `${base} bg-paper text-ink`;
 
+/** A compact status link with less visual weight than an action button. */
+export const orderStatusLink = "inline-flex min-h-11 min-w-0 items-center gap-2 rounded-xl border-2 border-brand-blue bg-paper px-3 py-1.5 text-brand-blue transition-colors duration-150 hover:bg-tile-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue";
+
 /** Static info pill (lead times, open/closed). Add a background class (and inline-flex where it is not a list item). */
 export const pill = "rounded-full border-2 border-ink px-3 py-0.5 font-bold sm:px-4 sm:py-1";
