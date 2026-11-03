@@ -166,3 +166,9 @@ Stage illustrations are code-native inline SVG: a stamped receipt for Paid, a wo
 Owner dashboard and order screens use an 18 px minimum body size, larger order/customer names and totals, high-contrast labeled status badges with inline icons, and button-style navigation links from the shared styles. Dashboard navigation has four large destinations: Order history, Menu and prices, Reports, and Kitchen board. Menu and report pages retain their separate implementation ownership.
 
 History shows the same returned orders as cards below the wide desktop breakpoint and as a semantic table on wider screens; inactive markup is hidden. Detail screens emphasize customer and pickup information, and monetary totals are right-aligned. Existing brief entrance motion applies to cards and the desktop table container rather than table rows, and honors reduced motion. Order reads, query/filter behavior, permissions and the cancellation confirmation flow are unchanged.
+
+## Kitchen board polish (SCRUM-71)
+
+The kitchen board uses a dark high-contrast header, separate cooking/ready count chips, and blue/green column heading bands with written labels and counts. Ticket numbers are 48 px; customer names and boxed pickup times remain prominent. Every card retains one 64 px minimum action button, with a pressed state and a high-contrast Saving state.
+
+A new ticket rises in for 240 ms; a ticket entering the Ready column slides/fades in for 260 ms. Entrance animation sits on a wrapper so the article's late-border pulse remains independent. Existing keyed tickets do not replay the Ready animation on unchanged polls. All kitchen animation is disabled under reduced motion. Existing polling, grid breakpoints, status transitions, sorting, sound behavior and late rules are unchanged. Contact and payment fields remain excluded from kitchen tickets.

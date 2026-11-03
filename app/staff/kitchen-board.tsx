@@ -127,11 +127,11 @@ export function KitchenBoard() {
         type="button"
         aria-pressed={soundOn}
         onClick={toggleSound}
-        className="sticker inline-flex min-h-12 items-center justify-center rounded-full bg-paper px-5 text-lg font-bold text-ink focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-brand-blue"
+        className="sticker inline-flex min-h-12 items-center justify-center rounded-full bg-paper px-5 text-lg font-bold text-ink focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-mustard"
       >
         New-order sound: {soundOn ? "On" : "Off"}
       </button>
-      {soundError && <p role="alert" className="text-base font-semibold text-status-late">Sound is not available on this device.</p>}
+      {soundError && <p role="alert" className="rounded-lg bg-paper px-3 py-2 text-lg font-semibold text-status-late">Sound is not available on this device.</p>}
     </div>
   );
 
@@ -168,7 +168,7 @@ export function KitchenBoard() {
 
   const { cooking, ready } = boardColumns(tickets);
   const card = (t: KitchenTicket) => (
-    <li key={t.id}>
+    <li key={t.id} className="min-w-0">
       <TicketCard
         ticket={t}
         nowMs={nowMs}
@@ -195,7 +195,7 @@ export function KitchenBoard() {
         </section>
       ) : (
         <div className="grid gap-8 lg:grid-cols-3">
-          <section aria-labelledby="col-cooking" className="lg:col-span-2">
+          <section aria-labelledby="col-cooking" className="min-w-0 lg:col-span-2">
             <ColumnHeading id="col-cooking" title="Cooking" count={cooking.length} />
             {cooking.length === 0 ? (
               <p className="py-8 text-xl text-muted">Nothing to cook right now.</p>
@@ -203,7 +203,7 @@ export function KitchenBoard() {
               <ul className="grid gap-6 sm:grid-cols-2">{cooking.map(card)}</ul>
             )}
           </section>
-          <section aria-labelledby="col-ready">
+          <section aria-labelledby="col-ready" className="min-w-0">
             <ColumnHeading id="col-ready" title="Ready for pickup" count={ready.length} />
             {ready.length === 0 ? (
               <p className="py-8 text-xl text-muted">Nothing waiting for pickup.</p>
@@ -227,16 +227,17 @@ function BoardShell({
   actions?: React.ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-cream px-4 py-6 text-ink sm:px-8">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b-4 border-ink pb-4">
-        <div>
-          <p className="text-base font-bold uppercase tracking-widest text-brand-blue">Menciu&apos;s Chopstix</p>
-          <h1 className="font-heading text-4xl font-bold">Kitchen &amp; Counter</h1>
+    <main className="kitchen-board min-h-screen bg-cream px-4 py-6 text-ink sm:px-8">
+      <header className="mb-8 flex flex-wrap items-center justify-between gap-6 rounded-2xl border-2 border-ink bg-ink p-5 text-paper sm:p-7">
+        <div className="min-w-0">
+          <p className="text-lg font-bold text-cream">Menciu&apos;s Chopstix</p>
+          <h1 className="mt-2 font-heading text-4xl font-black lg:text-5xl">Kitchen &amp; Counter</h1>
         </div>
-        <div className="flex flex-wrap items-center gap-6">
+        <div className="flex min-w-0 flex-wrap items-center gap-4">
           {counts && (
-            <p className="tabular text-xl font-semibold">
-              {counts.cooking} cooking · {counts.ready} ready
+            <p className="tabular flex flex-wrap gap-3 text-xl font-bold">
+              <span className="rounded-xl bg-paper px-4 py-2 text-ink">{counts.cooking} cooking</span>
+              <span className="rounded-xl bg-open px-4 py-2 text-open-ink">{counts.ready} ready</span>
             </p>
           )}
           {actions}
@@ -249,8 +250,8 @@ function BoardShell({
 
 function ColumnHeading({ id, title, count }: { id: string; title: string; count: number }) {
   return (
-    <h2 id={id} className="mb-4 text-2xl font-bold">
-      {title} <span className="tabular text-muted">({count})</span>
+    <h2 id={id} className={`mb-5 flex items-center justify-between gap-3 rounded-xl px-5 py-4 text-2xl font-bold text-paper ${id === "col-ready" ? "bg-status-ready" : "bg-brand-blue"}`}>
+      <span>{title}</span> <span className="tabular flex h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border-2 border-paper px-2" aria-label={`${count} orders`}>{count}</span>
     </h2>
   );
 }
