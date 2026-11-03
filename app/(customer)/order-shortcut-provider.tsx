@@ -10,8 +10,6 @@ const ShortcutContext = createContext<{
   order: (LastOrder | Snapshot) | null;
   status: ShortcutStatus | null;
   unavailable: boolean;
-  motionPaused: boolean;
-  toggleMotion: () => void;
   publish: (order: Snapshot, unavailable?: boolean) => void;
 } | null>(null);
 
@@ -21,14 +19,12 @@ export function OrderShortcutProvider({ children }: { children: React.ReactNode 
   const [saved, setSaved] = useState<LastOrder | null>(null);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [unavailable, setUnavailable] = useState(false);
-  const [motionPaused, setMotionPaused] = useState(false);
-  const toggleMotion = useCallback(() => setMotionPaused((paused) => !paused), []);
   const publish = useCallback((order: Snapshot, unavailable = false) => { setSnapshot(order); setUnavailable(unavailable); }, []);
   const onOrderPage = pathname.startsWith("/order/");
 
   useEffect(() => {
     const syncMotion = () => {
-      document.documentElement.dataset.orderMotionPaused = String(document.hidden || motionPaused);
+      document.documentElement.dataset.orderMotionPaused = String(document.hidden);
     };
     syncMotion();
     document.addEventListener("visibilitychange", syncMotion);
@@ -36,7 +32,7 @@ export function OrderShortcutProvider({ children }: { children: React.ReactNode 
       document.removeEventListener("visibilitychange", syncMotion);
       delete document.documentElement.dataset.orderMotionPaused;
     };
-  }, [motionPaused]);
+  }, []);
 
   useEffect(() => {
     let expiry: ReturnType<typeof setTimeout>;
@@ -95,7 +91,7 @@ export function OrderShortcutProvider({ children }: { children: React.ReactNode 
   const pageSnapshot = onOrderPage && snapshot && pathname === `/order/${snapshot.id}` ? snapshot : null;
   const order = pageSnapshot ?? saved;
   const status = order && snapshot?.id === order.id ? snapshot : null;
-  return <ShortcutContext.Provider value={{ order, status, unavailable, publish, motionPaused, toggleMotion }}>{children}</ShortcutContext.Provider>;
+  return <ShortcutContext.Provider value={{ order, status, unavailable, publish }}>{children}</ShortcutContext.Provider>;
 }
 
 export function useOrderShortcut() {

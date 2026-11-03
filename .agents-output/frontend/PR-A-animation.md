@@ -39,6 +39,10 @@ Added block display to avoid an inline SVG text-baseline gap in non-flex context
 
 The user's later request explicitly allows continuous animation on the customer's phone; that supersedes the earlier once-on-entry recommendation above. Main agent owns looping CSS, hidden-page pausing, layout alignment, and reduced-motion handling. Keep the receipt's new outer static translation separate from animated child groups so CSS transforms preserve the alignment adjustment.
 
+## PR 30 customer control revision
+
+Removed the customer-facing pause/play controls and their shared manual state at the user's explicit request. The header status chip is one complete navigation Link again, with decorative artwork. The order page keeps its centered artwork wrapper. Automatic animation pausing while the document is hidden remains; reduced-motion CSS, animation timing, polling, and status refresh logic are unchanged.
+
 ## Lead integration and validation
 
 - Integrated large stage artwork into the customer order page and compact artwork into the redesigned header status link.
@@ -58,3 +62,7 @@ The user's later request explicitly allows continuous animation on the customer'
 - Browser verified gallery row alignment, infinite animation continuing beyond a cycle, shared pause/play behavior, reduced-motion static artwork, and 375/640/768/1024/1440 px without overflow. Lint, typecheck and all 169 tests passed.
 - Updated screenshots: docs/screenshots/T29-v3. Original order-page polling remains unchanged.
 - Production build passed after the continuous-motion revision (FSX_DATA_SOURCE=supabase).
+
+## Removal of manual animation controls — lead validation
+
+Removed customer-facing pause/play controls and manual motion state as requested. The whole header chip is a single navigation link again. Continuous animation, automatic hidden-tab pausing/resume and reduced motion remain intact. Browser verified no manual controls in either customer location, an animated whole-chip link with a 44 px target, hidden/visible behavior, reduced-motion static artwork and five widths (375–1440 px). Lint, typecheck and all 169 tests passed. Updated screenshots: docs/screenshots/T29-v4.
