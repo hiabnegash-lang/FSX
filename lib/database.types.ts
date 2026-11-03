@@ -457,6 +457,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      owner_operational_reports: {
+        Args: { p_start: string; p_end: string }
+        Returns: Json
+      }
       attach_checkout_session: {
         Args: { p_order_id: string; p_session_id: string }
         Returns: undefined
