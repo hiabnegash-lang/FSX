@@ -1,6 +1,6 @@
 # SCRUM-77 / T39 — operational reports
 
-Scope follows docs/PERRY.md's T39 brief: daily sales, paid-order count, average order value, top 10 items by quantity and revenue, and orders by hour. RTM/sponsor confirmation remains pending; the Jira acceptance criterion requires agreed RTM scope and a merge into dev before Done.
+Scope follows docs/PERRY.md's T39 brief: daily sales, paid-order count, average order value, top 10 items by quantity and revenue, and orders by hour. Perry explicitly confirmed these reports on 2 November 2026. RTM requirement numbering was not available; a merge into dev and acceptance remain required before Done.
 
 `/owner/reports` and all CSV exports require an active owner login. Choose Today, Last 7 days, Last 30 days (default), or an inclusive custom range of up to 366 days. All dates/hours are America/Chicago, including DST. Apply dates or refresh for current figures. Every report/export is labelled Online orders only.
 
