@@ -1,0 +1,35 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
+select no_plan();
+insert into auth.users(id) values ('76000000-0000-0000-0000-000000000001'),('76000000-0000-0000-0000-000000000002');
+insert into public.staff_users(id,role) values ('76000000-0000-0000-0000-000000000001','owner'),('76000000-0000-0000-0000-000000000002','staff');
+create temp table payload(value jsonb);
+grant select,update on payload to authenticated;
+insert into payload select jsonb_build_object('id',i.id,'version',i.updated_at,'categoryId',i.category_id,'code',i.code,
+  'name','Owner edited egg roll','description','Contains wheat.','sortOrder',3,'isAvailable',false,'isActive',true,
+  'isSpicyFlag',false,'isCatering',false,'sizes',jsonb_build_array(jsonb_build_object('name','regular','price',199))) from public.menu_items i where code='A2';
+select set_config('request.jwt.claim.sub','76000000-0000-0000-0000-000000000002',true);
+set local role authenticated;
+select throws_ok($$select public.owner_save_menu_item((select value from payload))$$,'42501',null,'Staff cannot call owner menu RPC');
+reset role;
+set local role anon;
+select throws_ok($$select public.owner_save_menu_item('{}')$$,'42501',null,'Guest cannot execute menu RPC');
+reset role;
+select set_config('request.jwt.claim.sub','76000000-0000-0000-0000-000000000001',true);
+set local role authenticated;
+select lives_ok($$select public.owner_save_menu_item((select value from payload))$$,'Owner saves item and size together');
+select is((select name from public.menu_items where code='A2'),'Owner edited egg roll','Name saved');
+select is((select is_available from public.menu_items where code='A2'),false,'Sold-out status saved');
+select is((select price_cents from public.item_sizes where menu_item_id=(select id from public.menu_items where code='A2')),199,'Exact cents saved');
+select is((select count(*)::int from public.price_change_log where new_price_cents=199 and old_price_cents=150),1,'Price change audited');
+update payload set value = jsonb_set(value,'{version}',to_jsonb('2000-01-01T00:00:00Z'::text));
+select throws_ok($$select public.owner_save_menu_item((select value from payload))$$,'40001',null,'Stale edit rejected');
+update payload set value = jsonb_set(value,'{version}',to_jsonb((select updated_at from public.menu_items where code='A2')));
+update payload set value = jsonb_set(jsonb_set(value,'{name}','"Should roll back"'),'{sizes,0,price}','0');
+select throws_ok($$select public.owner_save_menu_item((select value from payload))$$,'23514',null,'Invalid price rejected');
+select is((select name from public.menu_items where code='A2'),'Owner edited egg roll','Invalid size rolled back item edit too');
+select throws_ok($$delete from public.menu_categories where id=(select category_id from public.menu_items where code='A2')$$,'23503',null,'Populated category cannot be deleted');
+reset role;
+select * from finish();
+rollback;

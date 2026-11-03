@@ -140,3 +140,41 @@ How to use it:
   code to `lib/menu-photos.ts`. Items without a photo show the placeholder tile.
 - Staff and owner screens: same tokens, denser and larger. Build them on `bg-paper`/`bg-ink`
   with the status colours above.
+
+## Kitchen board (SCRUM-71, SCRUM-75, 2 Nov)
+
+`/staff` polls `GET /api/staff/tickets` every 2 s (paused while the tab is hidden) and shows two columns:
+**Cooking** (received, in progress) and **Ready for pickup**, each oldest paid first. Each card has a full-width
+status header in words, order number and name large, pickup time, a "since paid" timer, the lines and one
+button ("Start cooking", "Mark ready", "Handed over"). There is no cancel button; cancelling is owner-only.
+
+- **Late rule (agreed 2 Nov):** a ticket is late when it is received or in progress and its pickup time has
+  passed. Ready tickets are never late (no-shows stay Ready). Late shows as a red header reading
+  "Late · <status>", a red timer and a thick red border that pulses (`anim-late`, still under reduced motion).
+- Timers use the server's clock (from the response `Date` header), so a tablet with a wrong clock still counts right.
+- The optional new-order sound is off until someone taps the toggle (browsers block sound before that).
+- Logic lives in `lib/kitchen-board.ts` and `lib/kitchen-api.ts`, tested in `tests/kitchen-*.test.mjs`.
+
+## Customer order stage artwork and header status (T29)
+
+The customer header shows a compact outlined status link with the order number, a written stage label, and matching artwork. On the order page it shares the page's existing response; elsewhere one shared browser refresher checks the existing public order endpoint every 10 seconds (3 seconds during payment confirmation), pauses while hidden, resumes on visibility, and stops on final states. A failed refresh says "Status unavailable" rather than presenting a stale stage as current. Finished order shortcuts are forgotten away from the order page as before.
+
+Stage illustrations are code-native inline SVG: a stamped receipt for Paid, a wok tossing ingredients for Being prepared, a takeaway bag for Ready for pickup, and a completion seal for Picked up. The large illustration appears on the order page; the compact version appears in the header. Animations loop continuously in gentle 2.4–3.6 second cycles with a quiet hold between gestures. Unchanged refreshes do not restart a loop. There are no customer-facing motion controls; loops pause automatically while the tab is hidden. Reduced motion shows still artwork. Pending, expired and cancelled states do not show progress artwork. Status always has a text label.
+
+## Owner readability (SCRUM-73)
+
+Owner dashboard and order screens use an 18 px minimum body size, larger order/customer names and totals, high-contrast labeled status badges with inline icons, and button-style navigation links from the shared styles. Dashboard navigation has four large destinations: Order history, Menu and prices, Reports, and Kitchen board. Menu and report pages retain their separate implementation ownership.
+
+History shows the same returned orders as cards below the wide desktop breakpoint and as a semantic table on wider screens; inactive markup is hidden. Detail screens emphasize customer and pickup information, and monetary totals are right-aligned. Existing brief entrance motion applies to cards and the desktop table container rather than table rows, and honors reduced motion. Order reads, query/filter behavior, permissions and the cancellation confirmation flow are unchanged.
+
+## Kitchen board polish (SCRUM-71)
+
+The kitchen board uses a dark high-contrast header, separate cooking/ready count chips, and blue/green column heading bands with written labels and counts. Ticket numbers are 48 px; customer names and boxed pickup times remain prominent. Every card retains one 64 px minimum action button, with a pressed state and a high-contrast Saving state.
+
+A new ticket rises in for 240 ms; a ticket entering the Ready column slides/fades in for 260 ms. Entrance animation sits on a wrapper so the article's late-border pulse remains independent. Existing keyed tickets do not replay the Ready animation on unchanged polls. All kitchen animation is disabled under reduced motion. Existing polling, grid breakpoints, status transitions, sorting, sound behavior and late rules are unchanged. Contact and payment fields remain excluded from kitchen tickets.
+
+## Staff entry and session controls (SCRUM-72)
+
+The customer footer has a quiet Staff sign in link to /login, with a 44 px target and visible focus. A reusable Sign out button appears in the kitchen header across all board states and in a shared owner session header across owner routes, without editing menu/report pages. Existing owner-to-kitchen navigation remains on the dashboard; staff receive no owner navigation.
+
+Sign out awaits the existing Supabase browser client's auth.signOut before replacing the route with /login and refreshing. Client-construction failure permits the requested local-stub fallback to /login. Returned errors and rejected requests show a retryable message while keeping the current screen. Busy state disables repeat taps. Login role routing and server permission checks are unchanged; no new motion was added.

@@ -46,7 +46,7 @@ export function SiteHeader({ businessHours, ordersOpen, ready, count, subtotalLa
           Menciu&apos;s Chopstix
         </Link>
         <div className="flex items-center gap-3">
-          <span className="hidden items-center gap-3 sm:flex">
+          <span className="hidden items-center gap-3 lg:flex">
             <AccountLink className="text-xs" />
             <LastOrderLink className="text-xs" />
             <OpenPill open={ordersOpen} className="text-xs" />
@@ -73,7 +73,7 @@ export function SiteHeader({ businessHours, ordersOpen, ready, count, subtotalLa
         </div>
       </nav>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="flex flex-wrap items-center gap-2 pb-2 sm:hidden"><OpenPill open={ordersOpen} className="text-xs" /><AccountLink className="text-xs" /><LastOrderLink className="text-xs" /></div>
+        <div className="flex flex-wrap items-center gap-2 pb-2 lg:hidden"><OpenPill open={ordersOpen} className="text-xs" /><AccountLink className="text-xs" /><LastOrderLink className="text-xs" /></div>
         <p role="status" className="sr-only">{message && `${message} ${count} items, subtotal ${subtotalLabel}.`}</p>
         {invalidLines && <p role="alert" className="py-1 text-sm text-ink">Some cart selections are no longer available. Review your cart before placing an order.</p>}
         {storageError && <p role="alert" className="py-1 text-sm text-ink">{storageError}</p>}

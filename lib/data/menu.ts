@@ -2,7 +2,7 @@ import type { MenuCategory } from "../types";
 
 // Fixture follows docs/menu.csv plus the A4/C19-C21 additions approved in PR #7.
 // Prices are integer cents on size rows; rice, drink, and allergen notes remain in descriptions.
-export const menuFixture: MenuCategory[] = [
+const initialMenuFixture: MenuCategory[] = [
   {
     id: "menu_category_1",
     name: "Appetizers",
@@ -274,6 +274,23 @@ export const menuFixture: MenuCategory[] = [
             id: "sz_g10",
             name: "regular",
             priceCents: 1250,
+          },
+        ],
+      },
+      {
+        id: "it_g11",
+        code: "G11",
+        name: "Sesame Chicken",
+        description: "Contains sesame.",
+        isAvailable: true,
+        isActive: true,
+        isSpicyFlag: false,
+        isCatering: false,
+        sizes: [
+          {
+            id: "sz_g11",
+            name: "regular",
+            priceCents: 1299,
           },
         ],
       },
@@ -898,3 +915,11 @@ export const menuFixture: MenuCategory[] = [
     ],
   },
 ];
+
+// Next.js can load this module separately for actions, pages and API routes.
+// Share mutable fixture state across those runtimes and development hot reloads.
+const fixtureGlobal = globalThis as unknown as {
+  __fsxMenuFixture?: MenuCategory[];
+};
+export const menuFixture: MenuCategory[] = (fixtureGlobal.__fsxMenuFixture ??=
+  initialMenuFixture);
