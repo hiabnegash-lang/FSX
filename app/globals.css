@@ -187,6 +187,26 @@ dialog.sheet::backdrop {
   animation: late-pulse 1.6s ease-in-out infinite;
 }
 
+/* Card entrance belongs to a wrapper so a late ticket can keep its independent border pulse. */
+@keyframes kitchen-arrive {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes kitchen-ready {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes kitchen-saving {
+  from { transform: scale(.8); }
+  to { transform: none; }
+}
+.kitchen-board .kitchen-ticket-enter { animation: kitchen-arrive 240ms ease-out both; }
+.kitchen-board .kitchen-ticket-ready { animation: kitchen-ready 260ms ease-out both; }
+.kitchen-board .kitchen-saving-mark { animation: kitchen-saving 200ms ease-out; }
+.kitchen-board .kitchen-ticket-action { transition: transform 150ms ease-out, box-shadow 150ms ease-out, background-color 150ms ease-out; }
+.kitchen-board .kitchen-ticket-action[aria-busy="true"] { background-color: var(--color-status-progress); }
+.kitchen-board .kitchen-ticket-action:enabled:active { transform: translateY(3px); box-shadow: 0 0 0 var(--color-ink); }
+
 /* Customer stage loops have a short gesture and a quiet hold, with shared pause controls. */
 .order-stage-art g { transform-box: fill-box; transform-origin: center; }
 @keyframes order-float {
@@ -238,6 +258,7 @@ dialog.sheet::backdrop {
 [data-order-motion-paused="true"] .order-stage-art :is(g, path) { animation-play-state: paused; }
 
 @media (prefers-reduced-motion: reduce) {
+  .kitchen-board :is(.kitchen-ticket-enter, .kitchen-ticket-ready, .kitchen-saving-mark, .anim-late) { animation: none !important; }
   .order-stage-art g, .order-stage-art path { animation: none !important; }
   .anim-late {
     animation: none;
