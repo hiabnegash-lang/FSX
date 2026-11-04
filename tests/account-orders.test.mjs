@@ -23,7 +23,7 @@ const order = (over = {}) => ({
 });
 
 /** Real requireUser and listMyOrders; only Supabase Auth, the data-mode switch and the store are replaced. */
-function load({ user = { id: "user-a" }, orders = [], reads = [], stub = false } = {}) {
+function load({ user = { id: "user-a" }, orders = [], reads = [], stub = false, accountsOn = true } = {}) {
   const client = { auth: { getUser: async () => ({ data: { user }, error: null }) } };
   const auth = loadModule(new URL("../lib/auth.ts", import.meta.url), {
     "./errors": errors, "./data/mode": { usingStub: () => stub }, "./supabase/server": { createClient: async () => client },
@@ -31,6 +31,7 @@ function load({ user = { id: "user-a" }, orders = [], reads = [], stub = false }
   const store = { listCustomerOrders: async (id) => { reads.push(id); return orders; } };
   return loadModule(new URL("../lib/account-orders.ts", import.meta.url), {
     "./auth": auth, "./data": { store }, "./errors": errors, "./public-order": publicOrder,
+    "./customer-accounts": { customerAccountsEnabled: () => accountsOn },
   });
 }
 const request = (headers = {}) => ({ headers: new Headers(headers) });
@@ -151,4 +152,14 @@ test("the live store query is limited to the account, paid orders, newest first,
   assert.ok(calls.some((c) => c[0] === "limit" && c[1] === 50), "at most 50");
   assert.equal(found[0].customerUserId, "user-a");
   assert.equal(found[0].orderNumber, "0007");
+});
+
+test("with customer accounts switched off, the route is 404 and nobody's session or orders are read", async () => {
+  const reads = [];
+  await assert.rejects(load({ reads, accountsOn: false }).listMyOrders(request()), (e) => e.status === 404 && e.code === "not_found");
+  assert.deepEqual(reads, []);
+  const route = loadModule(new URL("../app/api/account/orders/route.ts", import.meta.url), {
+    "next/server": next, "@/lib/errors": errors, "@/lib/account-orders": load({ accountsOn: false }),
+  });
+  assert.equal((await route.GET(request())).status, 404);
 });

@@ -12,7 +12,7 @@ const publicOrder = loadModule(new URL("../lib/public-order.ts", import.meta.url
  * The real order route, real account-orders and real auth. Only Supabase Auth, the store, Stripe and the
  * order service are replaced, so this exercises the actual linking path in the order it runs.
  */
-function checkout({ user = { id: "user-a" }, linkFails = false, stub = false } = {}) {
+function checkout({ user = { id: "user-a" }, linkFails = false, stub = false, accountsOn = true } = {}) {
   const calls = [];
   const logs = [];
   const order = { id: "order-test", orderNumber: "0042", customerEmail: "test@example.invalid", lines: [], totalCents: 100, taxCents: 0 };
@@ -30,6 +30,7 @@ function checkout({ user = { id: "user-a" }, linkFails = false, stub = false } =
   });
   const account = loadModule(new URL("../lib/account-orders.ts", import.meta.url), {
     "./auth": auth, "./data": { store }, "./errors": errors, "./public-order": publicOrder,
+    "./customer-accounts": { customerAccountsEnabled: () => accountsOn },
   }, { console: { error: (...args) => logs.push(args) } });
   const { POST } = loadModule(new URL("../app/api/orders/route.ts", import.meta.url), {
     "next/server": next, "@/lib/errors": errors, "@/lib/account-orders": account, "@/lib/data": { store },
@@ -52,6 +53,13 @@ test("a signed-in customer's new order is linked to their account before the Str
   const response = await post();
   assert.equal(response.status, 201);
   assert.deepEqual([...calls], ["create-order", "link:order-test:user-a", "create-session", "attach-session"]);
+});
+
+test("with customer accounts switched off, a signed-in staff or owner session never stamps the order", async () => {
+  const { calls, post } = checkout({ user: { id: "staff-user" }, accountsOn: false });
+  const response = await post();
+  assert.equal(response.status, 201);
+  assert.deepEqual([...calls], ["create-order", "create-session", "attach-session"]);
 });
 
 test("a guest checkout links nothing and works exactly as before", async () => {
