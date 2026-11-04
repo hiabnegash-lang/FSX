@@ -22,7 +22,20 @@ export type PriceChange = {
   new_price_cents: number;
   changed_at: string;
 };
-function check(error: { code?: string } | null) {
+const CATEGORY_IN_USE =
+  "Move every item out of this category before removing it.";
+const CATEGORY_MISSING =
+  "That category no longer exists. Reload the menu and choose another category.";
+// A foreign-key failure means different things per call: removing a category that still has
+// items, or saving an item into a category that no longer exists.
+function check(
+  error: { code?: string } | null,
+  foreignKey: { status: number; code: string; message: string } = {
+    status: 409,
+    code: "in_use",
+    message: CATEGORY_IN_USE,
+  },
+) {
   if (!error) return;
   if (error.code === "40001")
     throw new ApiError(
@@ -37,11 +50,7 @@ function check(error: { code?: string } | null) {
       "That code or category name already exists.",
     );
   if (error.code === "23503")
-    throw new ApiError(
-      409,
-      "in_use",
-      "Move every item out of this category before removing it.",
-    );
+    throw new ApiError(foreignKey.status, foreignKey.code, foreignKey.message);
   if (["23514", "22023", "22P02"].includes(error.code ?? ""))
     throw new ApiError(
       400,
@@ -137,11 +146,11 @@ export async function saveOwnerItem(request: AuthRequest, raw: unknown) {
   const { error } = await db.rpc("owner_save_menu_item", {
     p_item: item as unknown as Json,
   });
-  check(error);
+  check(error, { status: 400, code: "invalid", message: CATEGORY_MISSING });
 }
 function saveStub(edit: MenuEdit) {
   const category = menuFixture.find((c) => c.id === edit.categoryId);
-  if (!category) throw new ApiError(400, "invalid", "Choose a category.");
+  if (!category) throw new ApiError(400, "invalid", CATEGORY_MISSING);
   const oldCategory = menuFixture.find((c) =>
     c.items.some((i) => i.id === edit.id),
   );
@@ -207,11 +216,7 @@ export async function saveOwnerCategory(
     const old = menuFixture.find((c) => c.id === category.id);
     if (remove) {
       if (!old || old.items.length)
-        throw new ApiError(
-          409,
-          "in_use",
-          "Move every item out of this category before removing it.",
-        );
+        throw new ApiError(409, "in_use", CATEGORY_IN_USE);
       menuFixture.splice(menuFixture.indexOf(old), 1);
     } else if (old) Object.assign(old, category);
     else menuFixture.push({ ...category, id: crypto.randomUUID(), items: [] });
