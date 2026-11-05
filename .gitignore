@@ -37,3 +37,6 @@ next-env.d.ts
 
 # Original full-size food photos; only the resized ones in public/menu are committed.
 /Food/
+
+# SCRUM-98 packaging output (npm run package:deliverables)
+/deliverables/
