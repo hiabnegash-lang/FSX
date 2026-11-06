@@ -195,3 +195,88 @@ test("owner can create, change price, mark sold out, archive and restore; stale 
     { status: 409 },
   );
 });
+
+test("item codes G7 and G8 are refused with a clear message; other codes still pass", () => {
+  for (const code of ["G7", "G8"]) {
+    const result = validation.menuItemSchema.safeParse({ ...edit, code });
+    assert.equal(result.success, false);
+    assert.match(result.error.issues[0].message, /G7 and G8/);
+  }
+  for (const code of ["G6", "G9", "G11", "G70", "A7"])
+    assert.equal(
+      validation.menuItemSchema.safeParse({ ...edit, code }).success,
+      true,
+      code,
+    );
+  const malformed = validation.menuItemSchema.safeParse({
+    ...edit,
+    code: "g7",
+  });
+  assert.equal(malformed.success, false);
+  assert.match(malformed.error.issues[0].message, /one capital letter/);
+});
+
+function liveSetup(dbError) {
+  const db = {
+    rpc: async () => ({ error: dbError }),
+    from: () => {
+      const chain = {
+        delete: () => chain,
+        update: () => chain,
+        insert: async () => ({ error: dbError }),
+        eq: () => chain,
+        select: () => chain,
+        single: async () => ({ error: dbError }),
+      };
+      return chain;
+    },
+  };
+  return loadModule(
+    new URL("../lib/owner-menu.ts", import.meta.url),
+    {
+      "./auth": { requireRole: async () => {} },
+      "./supabase/server": { createClient: async () => db },
+      "./data/mode": { usingStub: () => false },
+      "./data/menu": { menuFixture: [] },
+      "./errors": errors,
+      "./owner-menu-validation": validation,
+    },
+    { crypto, Map, Date, globalThis: {} },
+  );
+}
+
+test("live item save into a missing category says so, not 'move every item out'", async () => {
+  const service = liveSetup({ code: "23503" });
+  await assert.rejects(service.saveOwnerItem({}, edit), (error) => {
+    assert.equal(error.status, 400);
+    assert.equal(error.code, "invalid");
+    assert.match(error.message, /category no longer exists/);
+    assert.doesNotMatch(error.message, /Move every item/);
+    return true;
+  });
+});
+
+test("live category removal with items still reports the category as in use", async () => {
+  const service = liveSetup({ code: "23503" });
+  await assert.rejects(
+    service.saveOwnerCategory(
+      {},
+      { id: "category", name: "Appetizers", sortOrder: 0 },
+      true,
+    ),
+    (error) => {
+      assert.equal(error.status, 409);
+      assert.equal(error.code, "in_use");
+      assert.match(error.message, /Move every item out/);
+      return true;
+    },
+  );
+});
+
+test("stub item save into a missing category uses the same message as live", async () => {
+  const { service } = setup();
+  await assert.rejects(
+    service.saveOwnerItem({}, { ...edit, categoryId: "gone" }),
+    /category no longer exists/,
+  );
+});
