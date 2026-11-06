@@ -178,3 +178,9 @@ A new ticket rises in for 240 ms; a ticket entering the Ready column slides/fade
 The customer footer has a quiet Staff sign in link to /login, with a 44 px target and visible focus. A reusable Sign out button appears in the kitchen header across all board states and in a shared owner session header across owner routes, without editing menu/report pages. Existing owner-to-kitchen navigation remains on the dashboard; staff receive no owner navigation.
 
 Sign out awaits the existing Supabase browser client's auth.signOut before replacing the route with /login and refreshing. Client-construction failure permits the requested local-stub fallback to /login. Returned errors and rejected requests show a retryable message while keeping the current screen. Busy state disables repeat taps. Login role routing and server permission checks are unchanged; no new motion was added.
+
+## Cart and checkout presentation (T29)
+
+Cart uses compact item rows with menu code chips, clear line totals, a grouped 44 px quantity stepper and quiet Edit/Remove actions. On desktop a separate receipt summary remains alongside the items using sticky positioning; phones stack the same content. The empty cart has a direct menu action. Shared panel, quiet-action and quantity-control styles live in lib/ui.ts.
+
+Cart, Pickup details and Payment are labeled steps; only the preceding Cart step is a navigation link. Checkout places contact and pickup controls before the order summary in the mobile reading and keyboard order, with the summary beside the form on desktop. Pickup lead time and the payment action are prominent, and final-total copy explains the Stripe handoff. Existing account email prefill, validation, closed-hours and lead-time rules, quantity/edit/remove behavior, storage/focus handling and submission remain unchanged. No new animation is added; shared transitions honor reduced motion.

@@ -8,8 +8,20 @@ export const btnPrimary = `${base} bg-brand-red text-white`;
 /** Secondary actions (Edit, Cancel). */
 export const btnSecondary = `${base} bg-paper text-ink`;
 
+/** Low-emphasis cart actions; keeps full tap targets without another sticker outline. */
+export const btnQuiet =
+  "inline-flex min-h-11 items-center justify-center rounded-lg px-3 py-2 font-bold transition-colors duration-150 hover:bg-tile focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue disabled:cursor-not-allowed disabled:opacity-50";
+/** The minus/plus buttons share one bordered quantity group. */
+export const quantityButton =
+  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-2xl font-bold text-brand-blue transition-colors duration-150 hover:bg-tile-blue focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue disabled:cursor-not-allowed disabled:opacity-40";
+/** A still receipt panel with the restaurant's printed-menu outline and offset shadow. */
+export const orderPanel =
+  "rounded-card border-2 border-ink bg-paper shadow-[4px_4px_0_var(--color-ink)]";
+
 /** A compact status link with less visual weight than an action button. */
-export const orderStatusLink = "inline-flex min-h-11 min-w-0 items-center gap-2 rounded-xl border-2 border-brand-blue bg-paper px-3 py-1.5 text-brand-blue transition-colors duration-150 hover:bg-tile-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue";
+export const orderStatusLink =
+  "inline-flex min-h-11 min-w-0 items-center gap-2 rounded-xl border-2 border-brand-blue bg-paper px-3 py-1.5 text-brand-blue transition-colors duration-150 hover:bg-tile-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue";
 
 /** Static info pill (lead times, open/closed). Add a background class (and inline-flex where it is not a list item). */
-export const pill = "rounded-full border-2 border-ink px-3 py-0.5 font-bold sm:px-4 sm:py-1";
+export const pill =
+  "rounded-full border-2 border-ink px-3 py-0.5 font-bold sm:px-4 sm:py-1";
