@@ -1,9 +1,4 @@
-import type {
-  BusinessHour,
-  Order,
-  Settings,
-  TicketStatus,
-} from "../types";
+import type { BusinessHour, Order, Settings, TicketStatus } from "../types";
 import type { OwnerOrderPage, OwnerOrderQuery } from "../views";
 import type { DataStore, MarkPaidResult } from "./store";
 
@@ -72,6 +67,16 @@ class StubStore implements DataStore {
       )
       .sort((a, b) => a.paidAt!.localeCompare(b.paidAt!));
   }
+  async setOrderCustomer(orderId: string, userId: string) {
+    const o = this.orders.get(orderId);
+    if (o && o.paymentStatus === "pending_payment" && !o.customerUserId) o.customerUserId = userId;
+  }
+  async listCustomerOrders(userId: string) {
+    return [...this.orders.values()]
+      .filter((o) => o.paymentStatus === "paid" && o.customerUserId === userId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.id.localeCompare(b.id))
+      .slice(0, 50);
+  }
   async listOrders(q: OwnerOrderQuery): Promise<OwnerOrderPage> {
     const needle = q.q?.trim().toLowerCase();
     const matches = [...this.orders.values()]
@@ -86,7 +91,10 @@ class StubStore implements DataStore {
           o.customerName.toLowerCase().includes(needle) ||
           o.orderNumber.includes(needle),
       )
-      .sort((a, b) => b.paidAt!.localeCompare(a.paidAt!) || a.id.localeCompare(b.id));
+      .sort(
+        (a, b) =>
+          b.paidAt!.localeCompare(a.paidAt!) || a.id.localeCompare(b.id),
+      );
     const start = (q.page - 1) * q.pageSize;
     return {
       orders: matches.slice(start, start + q.pageSize),
@@ -114,4 +122,6 @@ class StubStore implements DataStore {
 
 // Survive Next.js dev hot reloads.
 const g = globalThis as unknown as { __fsxStub?: StubStore };
+// Preserve data on hot reload, but refresh methods so they use current module references.
+if (g.__fsxStub) Object.setPrototypeOf(g.__fsxStub, StubStore.prototype);
 export const stubStore: DataStore = (g.__fsxStub ??= new StubStore());

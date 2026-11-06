@@ -140,7 +140,7 @@ const navigation = {
 };
 const link = { default: ({ href, children, ...props }) => jsx.jsx("a", { href, ...props, children }) };
 const orderUi = loadModule(new URL("../app/owner/orders/order-ui.tsx", import.meta.url), {
-  "react/jsx-runtime": jsx, "next/link": link, "next/navigation": navigation, "@/lib/errors": errors,
+  "react/jsx-runtime": jsx, "next/link": link, "next/navigation": navigation, "@/lib/errors": errors, "@/lib/ui": ui,
 });
 function page(endpoint, detail = false) {
   return loadModule(new URL(detail ? "../app/owner/orders/[id]/page.tsx" : "../app/owner/orders/page.tsx", import.meta.url), {

@@ -276,6 +276,7 @@ export type Database = {
           customer_email: string
           customer_name: string
           customer_phone: string | null
+          customer_user_id: string | null
           display_order_number: string
           earliest_pickup_at: string
           email_sent_at: string | null
@@ -294,6 +295,7 @@ export type Database = {
           customer_email: string
           customer_name: string
           customer_phone?: string | null
+          customer_user_id?: string | null
           display_order_number: string
           earliest_pickup_at: string
           email_sent_at?: string | null
@@ -312,6 +314,7 @@ export type Database = {
           customer_email?: string
           customer_name?: string
           customer_phone?: string | null
+          customer_user_id?: string | null
           display_order_number?: string
           earliest_pickup_at?: string
           email_sent_at?: string | null
@@ -457,6 +460,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      owner_operational_reports: {
+        Args: { p_start: string; p_end: string }
+        Returns: Json
+      }
+      owner_save_menu_item: {
+        Args: { p_item: Json }
+        Returns: string
+      }
       attach_checkout_session: {
         Args: { p_order_id: string; p_session_id: string }
         Returns: undefined

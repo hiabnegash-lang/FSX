@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { businessHoursLabel } from "@/lib/menu-display";
+import { AccountLink } from "./account-link";
 import { LastOrderLink } from "./last-order-link";
 import { OpenPill } from "./open-status";
 import type { BusinessHour } from "@/lib/types";
@@ -37,7 +38,9 @@ export function SiteHeader({ businessHours, ordersOpen, ready, count, subtotalLa
   }, [actionKey, noticeSeq]);
 
   return (
-    <div className="border-b-2 border-ink bg-paper">
+    // <header> (not <div>) so the mobile status row and cart alerts below the nav sit inside the
+    // page's banner landmark; screen-reader landmark navigation otherwise skips them.
+    <header className="border-b-2 border-ink bg-paper">
       <nav aria-label="Ordering navigation" className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
         <Link href="/menu" className="inline-flex min-h-11 items-center gap-2 rounded whitespace-nowrap font-heading text-base font-black tracking-tight text-brand-red min-[360px]:text-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-blue sm:text-2xl">
           {/* eslint-disable-next-line @next/next/no-img-element -- tiny static logo from /public */}
@@ -45,7 +48,8 @@ export function SiteHeader({ businessHours, ordersOpen, ready, count, subtotalLa
           Menciu&apos;s Chopstix
         </Link>
         <div className="flex items-center gap-3">
-          <span className="hidden items-center gap-3 sm:flex">
+          <span className="hidden items-center gap-3 lg:flex">
+            <AccountLink className="text-xs" />
             <LastOrderLink className="text-xs" />
             <OpenPill open={ordersOpen} className="text-xs" />
           </span>
@@ -71,7 +75,7 @@ export function SiteHeader({ businessHours, ordersOpen, ready, count, subtotalLa
         </div>
       </nav>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="flex flex-wrap items-center gap-2 pb-2 sm:hidden"><OpenPill open={ordersOpen} className="text-xs" /><LastOrderLink className="text-xs" /></div>
+        <div className="flex flex-wrap items-center gap-2 pb-2 lg:hidden"><OpenPill open={ordersOpen} className="text-xs" /><AccountLink className="text-xs" /><LastOrderLink className="text-xs" /></div>
         <p role="status" className="sr-only">{message && `${message} ${count} items, subtotal ${subtotalLabel}.`}</p>
         {invalidLines && <p role="alert" className="py-1 text-sm text-ink">Some cart selections are no longer available. Review your cart before placing an order.</p>}
         {storageError && <p role="alert" className="py-1 text-sm text-ink">{storageError}</p>}
@@ -87,6 +91,6 @@ export function SiteHeader({ businessHours, ordersOpen, ready, count, subtotalLa
           {toast}
         </p>
       )}
-    </div>
+    </header>
   );
 }
