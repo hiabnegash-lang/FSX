@@ -1,4 +1,10 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { requireRole } from "@/lib/auth";
+import { ApiError } from "@/lib/errors";
+
+export const dynamic = "force-dynamic";
 
 const destinations = [
   { href: "/owner/orders", title: "Order history", description: "Find online orders and review pickup and payment details.", icon: "M8 3h12v18l-3-2-3 2-3-2-3 2V3Zm3 5h6m-6 4h6" },
@@ -7,7 +13,23 @@ const destinations = [
   { href: "/staff", title: "Kitchen board", description: "Open the live kitchen and pickup ticket board.", icon: "M3 5h18v13H3V5Zm5 0v13m8-13v13M6 21h12" },
 ] as const;
 
-export default function Page() {
+export default async function Page() {
+  // The dashboard holds no data, but signed-out visitors should not see its frame or its links. Same
+  // check as the pages behind it: signed out goes to /login, any other role is told it is owner only.
+  try {
+    await requireRole({ headers: await headers() }, ["owner"]);
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+    if (error.status === 401) redirect("/login");
+    if (error.status !== 403) throw error;
+    return (
+      <main className="mx-auto max-w-3xl p-8 text-lg">
+        <h1 className="text-3xl font-bold">Owner access required</h1>
+        <p role="alert" className="my-4">{error.message}</p>
+        <Link href="/staff" className="text-brand-blue underline">Go to the kitchen board</Link>
+      </main>
+    );
+  }
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 text-lg leading-relaxed text-ink sm:px-8 sm:py-12">
       <header className="border-b-2 border-ink pb-7">
