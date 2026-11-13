@@ -194,6 +194,10 @@ Errors: `400 invalid_request`, `401 unauthenticated`, `403 forbidden` (a kitchen
 `404 not_found`, `409 invalid_transition` (details.from/to/allowed), `409 not_paid`,
 `413 payload_too_large`, `415 unsupported_media_type`.
 
+**Order-ready email (F31).** Moving a ticket to `ready` also sends the customer one email through Resend. It runs after
+the ticket has changed, never throws and never undoes the change, so the response does not depend on it. It is off until
+`RESEND_API_KEY` is set. See `docs/order-ready-email.md`.
+
 Live Auth verifies Supabase users and reads `staff_users.role` and `active` (an inactive account gets 403). Ticket writes use the signed-in
 session so RLS and audit attribution enforce owner-only cancellation. In explicitly selected local
 stub mode only, `x-stub-role: staff|owner` is accepted. Stub mode is refused in production.
@@ -208,7 +212,7 @@ Set `FSX_DATA_SOURCE=stub` locally to use it; it cannot insert demo rows in the 
 
 - Order-number format is confirmed: a running number displayed as `#0042`, unique for all time; gaps are normal.
 - Sold-out is decided at item level (owner, 30 Oct 2026). Kitchen staff and the owner may mark an item sold out or available again; only the owner can change its name, description, order, archive status or prices.
-- Email on `ready` (Resend or similar) — not part of this contract until the dependency is approved.
+- Email on `ready` is built (Resend over its REST API, no npm dependency) and stays off until `RESEND_API_KEY` is set. The sponsor approved using Resend on 12 Nov 2026.
 - Request validation uses `zod` (approved by the dev lead as a new dependency, 7 Oct).
 
 ## Design notes for SCRUM-64
