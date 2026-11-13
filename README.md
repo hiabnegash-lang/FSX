@@ -60,6 +60,8 @@ gitignored) and in the Vercel project settings for deployments. Never commit a r
 | `STRIPE_SECRET_KEY`                  | **Server only**    | `sk_test_…` in test mode                                                                                                                                                               |
 | `STRIPE_WEBHOOK_SECRET`              | **Server only**    | `whsec_…`; different for `stripe listen` and for each deployed endpoint                                                                                                                |
 | `STRIPE_SITE_TAG`                    | Server             | Required. Unique per environment (for example `local-jose`, `vercel-prod`) so a shared Stripe test account's webhooks only act on their own orders. Payments stay off until it is set. |
+| `RESEND_API_KEY`                     | **Server only**    | Resend sending key for the order-ready email. Leave empty and the email is simply off; the kitchen is never blocked. See [`docs/order-ready-email.md`](docs/order-ready-email.md)                    |
+| `EMAIL_FROM`                         | Server             | Optional sender address; defaults to `Menciu's Chopstix <no-reply@chopstixhouston.com>`                                                                                                                  |
 | `NEXT_PUBLIC_SITE_URL`               | Server             | Base URL used for Stripe return links, for example `http://localhost:3000`                                                                                                             |
 
 ## Supabase setup
