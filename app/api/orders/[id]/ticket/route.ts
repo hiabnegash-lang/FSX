@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { store } from "@/lib/data";
+import { notifyOrderReady } from "@/lib/notify-ready";
 import { ApiError, errorResponse } from "@/lib/errors";
 import { allowedNext, isTicketStatus } from "@/lib/ticket";
 import { parseBody, ticketPatchSchema } from "@/lib/validation";
@@ -44,6 +45,9 @@ export async function PATCH(
     }
 
     const updated = await store.setTicketStatus(order.id, status);
+    // Ready is the one step that emails the customer (F31). notifyOrderReady never throws and never undoes the
+    // ticket change, so email trouble cannot block the kitchen.
+    if (status === "ready") await notifyOrderReady(order.id);
     return NextResponse.json({
       orderId: updated.id,
       ticketStatus: updated.ticketStatus,

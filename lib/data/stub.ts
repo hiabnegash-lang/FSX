@@ -1,6 +1,6 @@
 import type { BusinessHour, Order, Settings, TicketStatus } from "../types";
 import type { OwnerOrderPage, OwnerOrderQuery } from "../views";
-import type { DataStore, MarkPaidResult } from "./store";
+import type { DataStore, MarkPaidResult, ReadyEmailTarget } from "./store";
 
 import { menuFixture } from "./menu";
 
@@ -20,6 +20,7 @@ const SETTINGS: Settings = {
 class StubStore implements DataStore {
   private orders = new Map<string, Order>();
   private paidSessions = new Set<string>();
+  private emailedOrders = new Set<string>();
   private seq = 0;
 
   async getMenu() {
@@ -112,6 +113,17 @@ class StubStore implements DataStore {
     o.ticketStatus = "received";
     o.paidAt = new Date().toISOString();
     return "paid";
+  }
+  async getReadyEmailTarget(orderId: string): Promise<ReadyEmailTarget | null> {
+    const o = this.orders.get(orderId);
+    if (!o || o.ticketStatus !== "ready" || this.emailedOrders.has(orderId)) return null;
+    return {
+      orderId: o.id, orderNumber: o.orderNumber, customerName: o.customerName,
+      customerEmail: o.customerEmail, pickupTime: o.pickupTime,
+    };
+  }
+  async markReadyEmailSent(orderId: string) {
+    if (this.orders.has(orderId)) this.emailedOrders.add(orderId);
   }
   async setTicketStatus(orderId: string, status: TicketStatus) {
     const o = this.orders.get(orderId)!;

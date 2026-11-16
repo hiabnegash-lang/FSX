@@ -197,7 +197,7 @@ function ticketEndpoint(options) {
   const { auth } = setup(options);
   const changes = [];
   return { changes, ...loadModule(new URL("../app/api/orders/[id]/ticket/route.ts", import.meta.url), {
-    "next/server": next, "@/lib/auth": auth, "@/lib/errors": errors,
+    "next/server": next, "@/lib/auth": auth, "@/lib/errors": errors, "@/lib/notify-ready": { notifyOrderReady: async () => "not_configured" },
     "@/lib/ticket": ticket, "@/lib/validation": validation,
     "@/lib/data": { store: {
       getOrder: async () => options.found ?? order,

@@ -14,6 +14,15 @@ export type MarkPaidResult =
   | "session_mismatch" // session is not the one saved on this order
   | "not_pending"; // order already expired or paid; nothing changed
 
+/** What the order-ready email needs. Server-side only: staff and owner sessions never see the address. */
+export interface ReadyEmailTarget {
+  orderId: string;
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  pickupTime: string;
+}
+
 /** Every route talks to this interface. Stub today, Supabase after 12 Oct. */
 export interface DataStore {
   getMenu(): Promise<MenuCategory[]>;
@@ -51,4 +60,11 @@ export interface DataStore {
    */
   markPaid(orderId: string, sessionId: string): Promise<MarkPaidResult>;
   setTicketStatus(orderId: string, status: TicketStatus): Promise<Order>;
+  /**
+   * The contact details for the one order-ready email, or null when the order is not found, is not Ready, or
+   * has already been emailed (`email_sent_at` set). The Supabase version reads with the service role.
+   */
+  getReadyEmailTarget(orderId: string): Promise<ReadyEmailTarget | null>;
+  /** Records a successful dispatch by setting `email_sent_at` once. Never overwrites an existing value. */
+  markReadyEmailSent(orderId: string): Promise<void>;
 }

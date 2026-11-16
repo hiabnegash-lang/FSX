@@ -5,7 +5,7 @@ import { createClient } from "../supabase/server";
 import { ApiError } from "../errors";
 import type { BusinessHour, MenuCategory, Order, OrderLine, Settings, TicketStatus } from "../types";
 import type { OwnerOrderPage, OwnerOrderQuery } from "../views";
-import type { DataStore, MarkPaidResult } from "./store";
+import type { DataStore, MarkPaidResult, ReadyEmailTarget } from "./store";
 
 type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 
@@ -171,6 +171,25 @@ class SupabaseStore implements DataStore {
     check(error);
     return { orders: await mapOrders(data ?? []), total: count ?? 0 };
   }
+  async getReadyEmailTarget(orderId: string): Promise<ReadyEmailTarget | null> {
+    // Service role: staff and owner sessions are not allowed to read the contact columns.
+    const { data, error } = await createAdminClient().from("orders")
+      .select("id,display_order_number,customer_name,customer_email,pickup_at,ticket_status,email_sent_at")
+      .eq("id", orderId).maybeSingle();
+    check(error);
+    if (!data || data.ticket_status !== "ready" || data.email_sent_at) return null;
+    return {
+      orderId: data.id, orderNumber: data.display_order_number, customerName: data.customer_name,
+      customerEmail: data.customer_email, pickupTime: data.pickup_at,
+    };
+  }
+
+  async markReadyEmailSent(orderId: string): Promise<void> {
+    const { error } = await createAdminClient().from("orders")
+      .update({ email_sent_at: new Date().toISOString() }).eq("id", orderId).is("email_sent_at", null);
+    check(error);
+  }
+
   async setTicketStatus(orderId: string, status: TicketStatus): Promise<Order> {
     // MUST use the authenticated owner's/staff's cookies: service-role identity cannot cancel.
     const db = await createClient();

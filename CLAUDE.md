@@ -129,5 +129,5 @@ docs/           team docs, menu.csv, diagrams
   (ready email), BR-29 (owner cancels), BR-32 ("Online orders only" label).
 - Order-number format (running number vs daily code) and sold-out level (item vs size) are still open;
   item level is the working assumption.
-- Order-ready email provider (Resend or the restaurant's mailbox) needs vendor approval.
+- Order-ready email (F31) is built on Resend's REST API and stays off until `RESEND_API_KEY` is set; the sponsor approved using Resend on 12 Nov 2026, so the key can be added (see `docs/order-ready-email.md`).
 - Staff login is still a dev stub (`lib/auth.ts`); real Supabase Auth follows the schema (T23).
